@@ -1,0 +1,22 @@
+name: Blog checks
+on:
+  push:
+    branches: [main, 'devrel/technical-blog']
+  pull_request:
+    paths: ['public/blog/**', 'docs/blog/**', 'index.html', 'docs/index.html', 'public/blog-entry.css', 'docs/blog-entry.css', 'scripts/check_blog.py', '.github/workflows/blog-checks.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Check static pages and publication mirror
+        run: python3 scripts/check_blog.py
+      - name: Test CSV validator
+        run: python3 -m unittest discover -s public/blog/exemplos/validacao-csv -v
+      - name: Test revision example
+        run: python3 -m unittest discover -s public/blog/exemplos/revisoes -v
