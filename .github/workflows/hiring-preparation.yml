@@ -48,6 +48,9 @@ jobs:
                       text=text[:start]+replacement+text[end:];last=start+1
               prepared.append((p,text))
           for p,text in prepared:p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text)
+          p=Path('scripts/build_power_bi_source.py');text=p.read_text();old="'themeCollection':{'baseTheme'"
+          if text.count(old)!=1:raise SystemExit('Report layout patch target changed')
+          p.write_text(text.replace(old,"'layoutOptimization':'None','themeCollection':{'baseTheme'"))
           url='https://raw.githubusercontent.com/MauricioTaguchi/analise-renda-brasil/5810d34116d0e8da9ab10005c561359e73a8560a/data/staging/income_by_state_quarter.csv'
           with urllib.request.urlopen(url,timeout=40) as response:data=response.read(1000000)
           if hashlib.sha256(data).hexdigest()!='61942149fdaad3fb9c5e899b1bf8d8d200a32c3ba5ac59cc3853f7069b247b2a':raise SystemExit('Income source checksum mismatch')
@@ -68,12 +71,13 @@ jobs:
           pnpm build
       - name: Validate examples, resources and native report schemas
         run: |
-          python -B -m unittest discover -s tests -v
-          python -B -m unittest discover -s content/hiring/income-lab -v
-          python -B public/blog/exemplos/run_examples.py
+          mkdir -p "$RUNNER_TEMP/hiring-evidence"
+          python -B -m unittest discover -s tests -v 2>&1 | tee "$RUNNER_TEMP/hiring-evidence/maintenance-tests.txt"
+          python -B -m unittest discover -s content/hiring/income-lab -v 2>&1 | tee "$RUNNER_TEMP/hiring-evidence/sql-tests.txt"
+          python -B public/blog/exemplos/run_examples.py 2>&1 | tee "$RUNNER_TEMP/hiring-evidence/tutorial-tests.txt"
           python -B scripts/check_blog.py
           python -B scripts/check_publication.py
-          python -B scripts/check_power_bi_schema.py
+          python -B scripts/check_power_bi_schema.py 2>&1 | tee "$RUNNER_TEMP/hiring-evidence/native-schema.txt"
       - name: Exercise portfolio, blog and hiring flows
         run: |
           python -B scripts/check_portfolio_browser.py --evidence-dir "$RUNNER_TEMP/hiring-evidence/portfolio"
@@ -87,7 +91,19 @@ jobs:
           git config user.email 'mauricioryotoitataguchi@gmail.com'
           git commit -m 'Add recruiter access, case studies and reproducible project demonstrations'
           git push origin HEAD:feature/hiring-ready-portfolio
-          git archive --format=zip HEAD -o "$RUNNER_TEMP/hiring-reviewed-source.zip"
+      - name: Capture source for review
+        if: always()
+        run: |
+          python - <<'PY'
+          import os,subprocess,zipfile
+          from pathlib import Path
+          names=subprocess.check_output(['git','ls-files','-co','--exclude-standard','-z']).decode().split('\0')
+          with zipfile.ZipFile(Path(os.environ['RUNNER_TEMP'])/'hiring-reviewed-source.zip','w',zipfile.ZIP_DEFLATED) as archive:
+              for name in sorted(set(names)):
+                  p=Path(name)
+                  if not name or not p.is_file() or name.startswith('.delivery/') or p.suffix.lower() in {'.ttf','.otf','.woff','.woff2'}:continue
+                  archive.write(p,name)
+          PY
       - name: Retain review evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
