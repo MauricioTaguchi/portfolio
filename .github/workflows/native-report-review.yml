@@ -1,0 +1,108 @@
+name: Native report review
+on:
+  push:
+    branches: [validation/power-bi-native-review]
+    paths: ['.github/workflows/native-report-review.yml']
+permissions:
+  contents: read
+jobs:
+  desktop:
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+      - name: Install signed official Desktop in the temporary runner
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          $out=Join-Path $env:RUNNER_TEMP 'native-evidence'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          @{identity=[Security.Principal.WindowsIdentity]::GetCurrent().Name;interactive=[Environment]::UserInteractive;os=[Environment]::OSVersion.VersionString} | ConvertTo-Json | Set-Content "$out/environment.json"
+          $installer=Join-Path $env:RUNNER_TEMP 'PBIDesktopSetup_x64.exe'
+          Invoke-WebRequest -UseBasicParsing -Uri 'https://download.microsoft.com/download/8/8/0/880bca75-79dd-466a-927d-1abf1f5454b0/PBIDesktopSetup_x64.exe' -OutFile $installer
+          $signature=Get-AuthenticodeSignature $installer
+          if($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notlike '*Microsoft Corporation*'){throw 'Installer publisher could not be verified'}
+          @{sha256=(Get-FileHash $installer -Algorithm SHA256).Hash;signer=$signature.SignerCertificate.Subject;signature=[string]$signature.Status} | ConvertTo-Json | Set-Content "$out/installer.json"
+          $process=Start-Process $installer -ArgumentList '-quiet','-norestart','ACCEPT_EULA=1','ENABLECXP=0','DISABLE_UPDATE_NOTIFICATION=1','LANGUAGE=en-US' -PassThru
+          if(-not $process.WaitForExit(300000)){throw 'Installer exceeded the bounded execution window'}
+          @{exitCode=$process.ExitCode} | ConvertTo-Json | Set-Content "$out/installation.json"
+          if($process.ExitCode -notin @(0,3010)){throw 'Desktop installation failed'}
+          $exe=Join-Path $env:ProgramFiles 'Microsoft Power BI Desktop/bin/PBIDesktop.exe'
+          if(-not(Test-Path $exe)){throw 'Desktop executable not found'}
+          "PBI_DESKTOP_PATH=$exe" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          (Get-Item $exe).VersionInfo | Select-Object FileVersion,ProductVersion | ConvertTo-Json | Set-Content "$out/desktop-version.json"
+          npm install --global --ignore-scripts @microsoft/powerbi-desktop-bridge-cli@1.0.0
+          if($LASTEXITCODE -ne 0){throw 'Official bridge CLI installation failed'}
+          powerbi-desktop help | Set-Content "$out/bridge-help.txt"
+      - name: Open the actual project and retain native evidence
+        shell: powershell
+        timeout-minutes: 6
+        run: |
+          $ErrorActionPreference='Stop'
+          $out=Join-Path $env:RUNNER_TEMP 'native-evidence'
+          $report=Join-Path $env:GITHUB_WORKSPACE 'content/hiring/income-lab/power-bi/BrazilIncome.pbip'
+          powerbi-desktop open $report 1> "$out/open.json" 2> "$out/open-diagnostics.txt"
+          Start-Sleep -Seconds 20
+          powerbi-desktop status 1> "$out/status.json" 2> "$out/status-diagnostics.txt"
+          $processes=@(Get-Process PBIDesktop -ErrorAction SilentlyContinue)
+          $processes | Select-Object Id,ProcessName,MainWindowTitle,SessionId | ConvertTo-Json | Set-Content "$out/processes.json"
+          Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -AssemblyName System.Drawing
+          $bounds=[System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $bitmap=New-Object System.Drawing.Bitmap $bounds.Width,$bounds.Height
+          $graphics=[System.Drawing.Graphics]::FromImage($bitmap)
+          $graphics.CopyFromScreen($bounds.Location,[System.Drawing.Point]::Empty,$bounds.Size)
+          $bitmap.Save("$out/desktop.png",[System.Drawing.Imaging.ImageFormat]::Png)
+          $graphics.Dispose();$bitmap.Dispose()
+          Add-Type -AssemblyName UIAutomationClient
+          Add-Type -AssemblyName UIAutomationTypes
+          $root=[System.Windows.Automation.AutomationElement]::RootElement
+          $tree=@()
+          foreach($process in $processes){
+            $condition=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty,$process.Id)
+            $windows=$root.FindAll([System.Windows.Automation.TreeScope]::Children,$condition)
+            foreach($window in $windows){
+              $elements=$window.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
+              foreach($e in $elements){if($e.Current.Name){$tree+=@{name=$e.Current.Name;type=$e.Current.ControlType.ProgrammaticName;enabled=$e.Current.IsEnabled}}}
+            }
+            powerbi-desktop manifest --pid $process.Id 1> "$out/manifest-$($process.Id).json" 2> "$out/manifest-$($process.Id)-diagnostics.txt"
+            powerbi-desktop screenshot-all --pid $process.Id --output-dir "$out/report-pages" --scale 1 1> "$out/screenshots-$($process.Id).json" 2> "$out/screenshots-$($process.Id)-diagnostics.txt"
+          }
+          $tree | ConvertTo-Json -Depth 4 | Set-Content "$out/window-elements.json"
+          if($processes.Count -eq 0){throw 'No running Desktop process; native acceptance remains pending'}
+      - name: Query the local model when exposed by Desktop
+        if: always()
+        shell: powershell
+        timeout-minutes: 2
+        run: |
+          $ErrorActionPreference='Stop'
+          $out=Join-Path $env:RUNNER_TEMP 'native-evidence'
+          try {
+            $workspaces=Join-Path $env:LOCALAPPDATA 'Microsoft/Power BI Desktop/AnalysisServicesWorkspaces'
+            $portFile=Get-ChildItem $workspaces -Filter msmdsrv.port.txt -Recurse -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            if(-not $portFile){throw 'No local analytical model port available'}
+            $port=(Get-Content $portFile.FullName -Raw).Trim([char]0).Trim()
+            $bin=Join-Path $env:ProgramFiles 'Microsoft Power BI Desktop/bin'
+            $adomd=Get-ChildItem $bin -Filter Microsoft.AnalysisServices.AdomdClient.dll -Recurse | Select-Object -First 1
+            if(-not $adomd){throw 'Native query client is not installed'}
+            Add-Type -Path $adomd.FullName
+            $connection=New-Object Microsoft.AnalysisServices.AdomdClient.AdomdConnection("Data Source=localhost:$port")
+            $connection.Open()
+            $command=$connection.CreateCommand()
+            $command.CommandText="EVALUATE ROW(`"Income rows`",COUNTROWS('Income'),`"State rows`",COUNTROWS('States'),`"Quarter rows`",COUNTROWS('Quarters'),`"Latest mean`",[Income - unweighted state mean],`"Federal district`",CALCULATE([Income - unweighted state mean],States[state_code]=53),`"Missing prior year`",CALCULATE([Prior year income],Quarters[quarter_code]=202102))"
+            $reader=$command.ExecuteReader();$records=@()
+            while($reader.Read()){$row=@{};for($i=0;$i -lt $reader.FieldCount;$i++){$row[$reader.GetName($i)]=if($reader.IsDBNull($i)){$null}else{$reader.GetValue($i)}};$records+=$row}
+            $reader.Close();$connection.Close()
+            @{status='executed';query=$command.CommandText;rows=$records;scope='Read-only DAX execution against the local Desktop model; not visual acceptance or saved PBIX verification'} | ConvertTo-Json -Depth 6 | Set-Content "$out/native-query.json"
+          } catch {
+            @{status='not executed';reason=$_.Exception.Message} | ConvertTo-Json | Set-Content "$out/native-query.json"
+          }
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: native-report-evidence
+          path: ${{ runner.temp }}/native-evidence
+          retention-days: 7
