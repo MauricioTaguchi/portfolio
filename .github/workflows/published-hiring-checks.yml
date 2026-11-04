@@ -1,0 +1,35 @@
+name: Published hiring resource checks
+on:
+  push:
+    branches: [main]
+    paths: ['docs/index.html', 'docs/resume/**', 'docs/case-studies/**', 'docs/demos/**', 'scripts/check_hiring_browser.py', 'scripts/check_hiring_publication.py', '.github/workflows/published-hiring-checks.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: published-hiring-main
+  cancel-in-progress: true
+jobs:
+  published:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Wait for exact reviewed resources
+        run: python -B scripts/check_hiring_publication.py
+      - name: Prepare browser checks
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Verify deployed recruiter and demo journeys
+        run: python -B scripts/check_hiring_browser.py --base-url https://mauriciotaguchi.com.br/ --evidence-dir "${{ runner.temp }}/hiring-public-evidence"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: hiring-public-evidence
+          path: ${{ runner.temp }}/hiring-public-evidence
+          retention-days: 7
