@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#3148f6">
+<title>CSV validation study guide — Maurício Taguchi</title><meta name="description" content="Explain the input contract, diagnostics, file preservation and limits in your own words."><meta name="author" content="Maurício Taguchi"><link rel="canonical" href="https://mauriciotaguchi.com.br/blog/study-guide.html"><meta property="og:title" content="CSV validation study guide"><meta property="og:description" content="Explain the input contract, diagnostics, file preservation and limits in your own words."><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="https://mauriciotaguchi.com.br/blog/study-guide.html"><link rel="stylesheet" href="styles.css"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "headline": "CSV validation study guide", "description": "Explain the input contract, diagnostics, file preservation and limits in your own words.", "author": {"@type": "Person", "name": "Maurício Taguchi"}, "inLanguage": "en", "url": "https://mauriciotaguchi.com.br/blog/study-guide.html"}</script></head>
+<body><a class="skip" href="#content">Skip to content</a><div class="shell"><header class="top"><a class="brand" href="index.html" aria-label="Maurício Taguchi — Blog">MT<span>.</span></a><nav aria-label="Main navigation"><a href="../">Portfolio</a><a href="index.html">Blog</a><a href="reproduce.html">Reproduce</a><a href="reproduce.html#downloads">Downloads</a></nav></header><main id="content"><header class="article-head"><a class="back" href="reproduce.html#downloads">All learning resources</a><h1>Understand it.<br>Then explain it.</h1><p class="lead">A study and rehearsal guide for the CSV demonstration.</p></header><div class="reading"><aside class="toc" aria-label="Study resources"><strong>Learning resources</strong><a href="downloads/study-guide.md" download>Download this guide</a><a href="downloads/presentation-script.md" download>Presentation script</a><a href="downloads/csv-validation-slides.pptx" download>Editable slide deck</a></aside><article class="prose">
+<p>Maurício Taguchi · English learning resources</p>
+<h2>1. Set up without changing the source</h2>
+<p>Download the complete examples ZIP from the Reproduce page. Extract it into a new folder and keep the directory structure intact. Python 3.11 or later is required; no extra Python libraries are needed. Open a terminal in the extracted root. Run <code>py -B run_examples.py</code> on Windows or <code>python3 -B run_examples.py</code> on macOS/Linux.</p>
+<p>The runner checks both examples and normally removes its temporary report. To retain a report, create a new directory and use <code>--output-dir results-session-01</code>. Never overwrite source records or a previous report merely to make a command succeed.</p>
+<h2>2. Understand the input contract</h2>
+<p>The exact columns are <code>sale_id,date,amount_brl</code>. An ID is nonempty, unique text: <code>0001</code> is not converted to <code>1</code>. Dates must match <code>YYYY-MM-DD</code> and exist in the calendar. Amounts are positive decimals with up to two fractional digits. The currency unit remains Brazilian reais; translating the material does not convert the dataset to dollars.</p>
+<p>Positivity is specific to this paid-sales demonstration. Refunds, adjustments and free transactions require a different business contract. Delimiters and decimal separators are explicit, not guessed.</p>
+<h2>3. Explain the five diagnostics</h2>
+<p>The problematic fixture has six records. ID <code>0002</code> occurs twice, producing two duplicate diagnostics. A date is impossible, an amount is missing and an amount is negative, producing the other three diagnostics. The validator does not silently decide which duplicate represents the legitimate sale.</p>
+<p><code>record</code> is a logical row count excluding the header. <code>line_end</code> refers to the physical file, which matters for quoted fields containing a line break. Reports omit raw cell values, but the source still needs appropriate access controls.</p>
+<h2>4. Interpret completion and exit codes</h2>
+<p>Exit 0: the complete inspection found no violations of the checked rules. Exit 1: the validator found invalid data or an incomplete validation result. Exit 2: an operational problem prevented normal execution. Read the report's <code>complete</code> and <code>valid</code> fields rather than treating an exit code as a certification of business truth.</p>
+<p>The invalid fixture is expected to return 1. The runner checks that specific expectation and returns 0 only when the full demonstration behaves as documented. A skipped unit test is not an approved test.</p>
+<h2>5. Rehearse the ten-slide sequence</h2>
+<ol>
+<li>Introduce the limited question: is this CSV ready for this analysis?</li>
+<li>Distinguish opening a file from validating its data.</li>
+<li>Explain the contract before showing implementation.</li>
+<li>Inspect the six-record synthetic fixture in a text editor.</li>
+<li>Run the tests, valid fixture and invalid fixture.</li>
+<li>Interpret the JSON and codes 0, 1 and 2.</li>
+<li>Explain the 38 tests, including the eight output-safety regressions.</li>
+<li>State limits: 10 MiB, 100,000 records, IDs in memory and no business reconciliation.</li>
+<li>Explain how a reviewer should return to the source before correcting uncertain records.</li>
+<li>Close with the article, code and an invitation to reproduce the example.</li>
+</ol>
+<p>Use the presentation script as a rehearsal aid, not a statement that a talk has already happened. For a personal recording, call it a tutorial or technical demonstration.</p>
+<h2>6. Questions to answer without reading</h2>
+<p><strong>Why not keep the first duplicate?</strong> The file alone does not establish which record is authoritative. Both are flagged for an explicit decision.</p>
+<p><strong>Why use Decimal?</strong> The example checks restricted decimal syntax and constructs Decimal directly from text, avoiding an intermediate binary float. This does not make every possible monetary rule correct.</p>
+<p><strong>Why require a new report path?</strong> Different names can refer to the same file through links. Exclusive creation rejects existing destinations and prevents overwriting. An interrupted new write can still be incomplete.</p>
+<p><strong>Does a successful test validate future data?</strong> No. It provides evidence for the implementation and tested inputs. Future inputs and changed business rules need their own checks.</p>
+<p><strong>Why does undo create a new revision?</strong> Content identity and operation history are different. Restoring old bytes can still be a new event. The teaching model does not verify concurrent database behavior.</p>
+<p><strong>What does an offline SDK check prove?</strong> Controlled behavior with fixtures. It does not prove availability of the public API. A live run is a separate observation at a particular time.</p>
+<h2>7. A safe practice exercise</h2>
+<p>Make a new synthetic CSV rather than changing the original fixture. Add one impossible date, one extra column and an identifier with leading zeroes. Run the validator and explain each outcome. Do not invent corrections for real records when the source evidence is missing.</p>
+<p>Record the command, input version, expected behavior, actual behavior and any skipped tests. A small documented difference is more useful than an unexplained green result.</p>
+<h2>8. Prepare an honest public demonstration</h2>
+<p>Close private messages, personal files and terminals containing secrets. Use only the synthetic examples. Check audio, text size and screen capture before recording. Review the entire recording before publishing.</p>
+<p>A demonstration has not been recorded or delivered by the preparation of these files. Add a video link only after it exists. Add event details, an audience and feedback only after the activity actually takes place, with the relevant permissions.</p>
+<h2>References and materials</h2>
+<p>Articles and downloads: https://mauriciotaguchi.com.br/blog/reproduce.html</p>
+<p>Python CSV: https://docs.python.org/3/library/csv.html</p>
+<p>Python Decimal: https://docs.python.org/3/library/decimal.html</p>
+<p>DataFlow receipt design: https://github.com/MauricioTaguchi/data-analytics-platform/blob/main/docs/AUDIT_RECEIPTS.md</p>
+</article></div></main><footer><span>Maurício Taguchi · Data, code and clear explanations.</span><a href="../">Back to portfolio</a></footer></div></body></html>

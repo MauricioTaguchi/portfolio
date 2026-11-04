@@ -1,0 +1,151 @@
+[
+  {
+    "title": "Is your CSV ready\nfor analysis?",
+    "kind": "cover",
+    "subtitle": "Practical validation with Python",
+    "body": [
+      "An explicit contract. Reproducible diagnostics.",
+      "The original file stays unchanged."
+    ],
+    "notes": "Hello, I’m Maurício Taguchi. I’ll show a small check you can run before using a CSV in a dashboard. This example uses synthetic data and the Python standard library. The goal is not to clean everything automatically, but to produce a diagnosis someone else can reproduce. Present a solo recording as a tutorial, not as an event talk."
+  },
+  {
+    "title": "Opening is not validating.",
+    "kind": "columns",
+    "items": [
+      [
+        "Duplicates",
+        "The same sale can\nbe counted twice."
+      ],
+      [
+        "Impossible dates",
+        "The format looks right;\nthe calendar disagrees."
+      ],
+      [
+        "Missing amounts",
+        "The field opens, but\nthe information is absent."
+      ]
+    ],
+    "notes": "Distinguish being able to open a file from trusting the analysis. A duplicate may count a sale twice, an impossible date can break grouping, and an empty amount can be skipped in aggregation. These are illustrative risks, not measured client results. Invite the audience to consider which cases they have encountered."
+  },
+  {
+    "title": "Start with the contract.",
+    "kind": "rows",
+    "items": [
+      [
+        "sale_id",
+        "Nonempty, unique text. Preserve leading zeroes."
+      ],
+      [
+        "date",
+        "A real calendar date in YYYY-MM-DD format."
+      ],
+      [
+        "amount_brl",
+        "A positive decimal, up to two fractional digits."
+      ]
+    ],
+    "footnote": "Positive amounts are a rule of this example, not a universal rule.",
+    "notes": "Explain the contract before the code. ID 0001 remains text. The date must match the format and exist in the calendar. amount_brl represents Brazilian reais, not dollars. Positive amounts model paid sales in this example; refunds need a different contract. Outer whitespace is ignored for validation only; no source data is rewritten."
+  },
+  {
+    "title": "Small input. Visible problems.",
+    "kind": "code",
+    "code": "sale_id,date,amount_brl\n0001,2026-10-01,150.00\n0002,2026-10-02,59.90\n0002,2026-10-03,80.00\n0004,2026-02-30,32.90\n0005,2026-10-04,\n0006,2026-10-05,-10.00",
+    "aside": "6 records\n5 diagnostics\n\nSynthetic data",
+    "notes": "Open sales_invalid.csv in a text editor, not a spreadsheet that may convert identifiers. There are six records. ID 0002 appears twice. February 30 does not exist. One amount is missing and another is negative. Both duplicate occurrences are flagged, which is why the report has five diagnostics. Do not silently choose which duplicate to keep."
+  },
+  {
+    "title": "Three commands to start.",
+    "kind": "code",
+    "code": "python -B -m unittest -v\n\npython -B validate_sales.py sales_valid.csv\n\npython -B validate_sales.py sales_invalid.csv --output report.json",
+    "aside": "Python 3.11+\nNo extra packages",
+    "footnote": "Use py on Windows where appropriate. Choose a new report path.",
+    "notes": "Open a terminal inside the csv-validation folder in the downloaded package. Check the Python version. Run the tests, then the valid and invalid fixtures. On PowerShell, inspect $LASTEXITCODE immediately after each command. The invalid fixture intentionally returns 1. Use a new report name: existing files, symbolic links and hard links are refused with code 2. Exclusive creation prevents overwriting but is not crash-safe atomic publication."
+  },
+  {
+    "title": "Read the result, not just the code.",
+    "kind": "columns",
+    "items": [
+      [
+        "0",
+        "Checked rules passed\nafter complete inspection."
+      ],
+      [
+        "1",
+        "Invalid data or an\nincomplete validation result."
+      ],
+      [
+        "2",
+        "An operational or\ninput problem."
+      ]
+    ],
+    "footnote": "complete: false means incomplete inspection — never approval.",
+    "notes": "Open the generated JSON. Distinguish valid from complete: a complete read can still find invalid records, while an incomplete inspection is not approval. record counts logical records excluding the header; line_end counts physical lines including multiline quoted fields. The report omits raw cell values. The runner knows the invalid fixture should exit with 1 and checks that expectation."
+  },
+  {
+    "title": "Test what can go wrong, too.",
+    "kind": "number",
+    "number": "38",
+    "subtitle": "CSV validator tests",
+    "body": [
+      "IDs and leading zeroes",
+      "Calendar dates and leap years",
+      "Quotes, columns and encoding",
+      "Exit codes and source preservation",
+      "Eight report-destination regression cases"
+    ],
+    "notes": "The CSV suite contains 38 tests. Explain two behaviors: all duplicate occurrences are flagged, and the input hash remains unchanged. The eight output-safety regressions exercise existing destinations and links. Link-related tests may be skipped on systems that do not permit them; report the actual count. Tests describe this implementation and these inputs, not every possible future file."
+  },
+  {
+    "title": "Validation has boundaries.",
+    "kind": "rows",
+    "items": [
+      [
+        "Scale",
+        "Up to 10 MiB and 100,000 records; IDs stay in memory."
+      ],
+      [
+        "Meaning",
+        "No proof that a sale occurred or totals were reconciled."
+      ],
+      [
+        "Production",
+        "Not a substitute for authorization, operations or security."
+      ]
+    ],
+    "notes": "State the boundaries without presenting the example as a production product. Size is checked before reading and does not defend against concurrent changes or all hostile inputs. We do not reconcile sales or check tax rules. Refund and free-sale policies require agreement with the business."
+  },
+  {
+    "title": "Diagnostics need a decision.",
+    "kind": "columns",
+    "items": [
+      [
+        "01",
+        "Identify the issue."
+      ],
+      [
+        "02",
+        "Review the source."
+      ],
+      [
+        "03",
+        "Run the check again."
+      ]
+    ],
+    "footnote": "Do not delete records merely to make a test pass.",
+    "notes": "Practice with a separate synthetic copy. Resolve a duplicate through an explicit decision about the authoritative record, not an invented ID that hides the issue. In real data, obtain missing values from a trusted source and clarify the meaning of negative transactions. When evidence is missing, return to the source rather than manufacturing a correction."
+  },
+  {
+    "title": "Validation provides evidence.\nThe business decides.",
+    "kind": "closing",
+    "body": [
+      "Code, tests and explanation:",
+      "mauriciotaguchi.com.br/blog/csv-validation.html",
+      "Complete examples, slides and study guide:",
+      "mauriciotaguchi.com.br/blog/reproduce.html"
+    ],
+    "footnote": "References: official Python csv and decimal documentation.",
+    "notes": "Invite the reader to reproduce the example and propose a rule with a test case. References are the official Python csv and decimal documentation. These materials do not establish that a talk, audience or community activity occurred. Record real teaching activity and feedback only after they happen."
+  }
+]

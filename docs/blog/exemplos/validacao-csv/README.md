@@ -1,41 +1,39 @@
-# Sales CSV validation / Validação de vendas
+# Sales CSV validation
 
-Exemplo didático com dados sintéticos, sem dependências externas. Python 3.11+; verificado localmente com Python 3.13.5. Não usa dados de empresas ou clientes.
+A teaching example using synthetic data and the Python standard library. Requires Python 3.11 or later. It contains no company or client records.
 
-## Executar
+## Run
 
-Abra o terminal nesta pasta. No Windows, use `py` no lugar de `python` caso necessário.
-
-```sh
-python -m unittest -v
-python validate_sales.py sales_valid.csv
-python validate_sales.py sales_invalid.csv --output report.json
-```
-
-O arquivo válido retorna código 0. O arquivo inválido retorna código 1 **por projeto**: são 6 registros e 5 ocorrências de problemas, incluindo as duas ocorrências do ID repetido. Código 2 significa problema de entrada, configuração ou escrita. O comando não corrige o arquivo nem o regrava.
-
-Contrato: colunas exatas `sale_id,date,amount_brl`, nesta ordem; ID não vazio e único; data real `YYYY-MM-DD`; valor positivo com até duas casas decimais. Não aceita separador de milhar, símbolo de moeda ou notação científica. Espaços externos são ignorados apenas na validação; zeros à esquerda do ID são preservados. A regra de valor positivo é específica deste exemplo de vendas pagas: devoluções exigem outro contrato.
-
-Para CSV brasileiro com ponto e vírgula e vírgula decimal:
+Open a terminal in this directory. On Windows, use `py` instead of `python` where appropriate.
 
 ```sh
-python validate_sales.py vendas.csv --delimiter ";" --decimal-separator ","
+python -B -m unittest -v
+python -B validate_sales.py sales_valid.csv
+python -B validate_sales.py sales_invalid.csv --output report.json
 ```
 
-`record` conta registros sem o cabeçalho. `line_end` é a última linha física do registro, inclusive quando existem campos entre aspas com quebras de linha. `complete: false` indica interrupção estrutural ou limite; não trate o resultado como validação integral.
+The valid fixture exits with 0. The invalid fixture exits with 1 intentionally: six records produce five diagnostics, including both occurrences of the duplicated ID. Exit code 2 means an input, configuration or writing problem. The command neither corrects nor rewrites the source.
 
-## Limitações
+Contract: exact columns `sale_id,date,amount_brl`, in that order; a nonempty unique text ID; a real `YYYY-MM-DD` date; a positive decimal amount with up to two fractional digits. Thousands separators, currency symbols and scientific notation are rejected. Outer whitespace is ignored for validation only; leading zeroes in IDs are preserved. Positive amounts represent paid sales in this particular example. Refunds need a different contract.
 
-Amostra em memória, até 10 MiB de arquivo regular e 100.000 registros. O limite de tamanho é conferido antes da leitura; não é uma defesa contra arquivo alterado simultaneamente. Não valida existência da venda, total conciliado, CPF, integridade referencial, regras fiscais ou autorização de acesso. Não é ferramenta de segurança para arquivos hostis nem substitui requisitos de produção. A confirmação de tipo/data não prova a correção do negócio.
+For a semicolon-delimited file with comma decimals, explicitly select:
 
-O relatório inclui nomes de campos e posições, mas não copia os valores brutos dos registros. Preserve acesso restrito ao CSV real. Não publique dados pessoais ao abrir uma issue.
+```sh
+python -B validate_sales.py sales.csv --delimiter ";" --decimal-separator ","
+```
 
-Fontes técnicas: https://docs.python.org/3/library/csv.html e https://docs.python.org/3/library/decimal.html.
+`record` counts logical records excluding the header. `line_end` identifies the last physical line, including quoted multiline fields. `complete: false` means parsing or limits prevented full inspection, not that the file was approved.
 
-## Preservação de relatórios
+## Limits
 
-`--output` exige um caminho novo. Arquivos existentes, links simbólicos e hard links são recusados, mesmo quando têm outro nome. Escolha outro nome para uma nova execução; não sobrescreva a entrada nem um diagnóstico anterior. A criação exclusiva não equivale a publicação atômica resistente a falhas de energia.
+At most 10 MiB and 100,000 records, with IDs retained in memory. File size is checked before reading; this does not protect against concurrent modification. The example does not prove a sale's existence, reconcile totals, validate tax obligations or provide authorization. It is not a hostile-file security boundary.
 
-`test_output_safety.py` acrescenta oito testes de regressão aos 30 testes originais. Rode `python -B -m unittest -v` com ambos os arquivos de teste presentes. Testes de links podem ser ignorados se o sistema operacional não os permitir.
+Diagnostics include field names and positions, not raw CSV values. Keep real data access restricted and never publish personal records in an issue.
 
-Na pasta `exemplos`, execute `python -B run_examples.py` para conferir as duas demonstrações e a preservação dos dados.
+## Report preservation
+
+`--output` requires a new path. Existing files, symbolic links and hard links are refused even under a different name. Exclusive creation avoids overwriting an existing destination, but is not crash-safe atomic publication.
+
+`test_output_safety.py` adds eight regression cases to the 30 original tests. Keep both test files present. Link-related tests may be skipped on systems that do not support or permit them; report the actual result.
+
+References: https://docs.python.org/3/library/csv.html and https://docs.python.org/3/library/decimal.html.

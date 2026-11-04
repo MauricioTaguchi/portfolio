@@ -9,7 +9,7 @@ from pathlib import Path
 import tempfile
 from threading import Thread
 from urllib.parse import urlsplit
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 from check_blog import Page, require
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,7 +21,9 @@ class QuietHandler(SimpleHTTPRequestHandler):
 
 
 def exercise(base: str, screenshots: Path | None) -> dict:
-    pages = sorted((ROOT/'docs/blog').glob('*.html'))
+    all_pages = sorted((ROOT/'docs/blog').glob('*.html'))
+    pages = [p for p in all_pages if Page(p.read_text(encoding='utf-8')).redirect is None]
+    aliases = [p for p in all_pages if Page(p.read_text(encoding='utf-8')).redirect is not None]
     if screenshots:
         screenshots.mkdir(parents=True, exist_ok=True)
     downloads = 0
@@ -42,6 +44,7 @@ def exercise(base: str, screenshots: Path | None) -> dict:
                 response = page.goto(base+local.name, wait_until='networkidle', timeout=30000)
                 require(response is not None and response.status == 200, f'HTTP failure: {local.name}')
                 require(page.title() == expected.title, f'Wrong title: {local.name}')
+                require(page.locator('html').get_attribute('lang') == 'en', 'Non-English page')
                 require(page.locator('h1').count() == 1, f'Missing main heading: {local.name}')
                 require(len(page.locator('main').inner_text()) > 100, f'Blank content: {local.name}')
                 require(page.locator('vite-error-overlay').count() == 0, 'Framework error overlay')
@@ -51,28 +54,33 @@ def exercise(base: str, screenshots: Path | None) -> dict:
                     page.screenshot(path=str(screenshots/f'{width}-{local.stem}.png'), full_page=True)
                 states += 1
             page.goto(base+'index.html')
-            page.locator('h2 a[href="validacao-csv.html"]').click()
-            require(urlsplit(page.url).path.endswith('/validacao-csv.html'), 'Article navigation failed')
-            page.locator('a[href="csv-validation-en.html"]').click()
-            require(page.locator('html').get_attribute('lang') == 'en', 'Language navigation failed')
-            page.goto(base+'reproduzir.html')
-            page.locator('.toc a[href="#executar"]').click()
-            require(urlsplit(page.url).fragment == 'executar', 'Contents anchor failed')
+            page.locator('h2 a[href="csv-validation.html"]').click()
+            require(urlsplit(page.url).path.endswith('/csv-validation.html'), 'Article navigation failed')
+            require(page.locator('html').get_attribute('lang') == 'en', 'English article missing')
+            for alias in aliases:
+                target = Page(alias.read_text(encoding='utf-8')).redirect
+                page.goto(base+alias.name)
+                expect(page).to_have_url(base+target)
+                require(page.locator('html').get_attribute('lang') == 'en', 'Legacy route did not reach English content')
+            page.goto(base+'reproduce.html')
+            page.locator('.toc a[href="#run"]').click()
+            require(urlsplit(page.url).fragment == 'run', 'Contents anchor failed')
             page.locator('summary').first.click()
             require(page.locator('details').first.get_attribute('open') is not None, 'Practice answer did not open')
-            with page.expect_download() as event:
-                page.locator('a[download][href="exemplos/validacao-csv/test_output_safety.py"]').click()
-            download = event.value
-            require(download.failure() is None, 'Browser download failed')
-            with tempfile.TemporaryDirectory() as directory:
-                target = Path(directory)/'download.py'
-                download.save_as(target)
-                require(target.read_bytes() == (ROOT/'docs/blog/exemplos/validacao-csv/test_output_safety.py').read_bytes(), 'Downloaded file differs from the checked version')
-            downloads += 1
+            for filename in ['technical-examples.zip','csv-validation-slides.pptx','study-guide.md','presentation-script.md','learning-plan.md']:
+                with page.expect_download() as event:
+                    page.locator(f'a[download][href="downloads/{filename}"]').click()
+                download = event.value
+                require(download.failure() is None, 'Browser download failed: '+filename)
+                with tempfile.TemporaryDirectory() as directory:
+                    target = Path(directory)/filename
+                    download.save_as(target)
+                    require(target.read_bytes() == (ROOT/'docs/blog/downloads'/filename).read_bytes(), 'Downloaded resource differs: '+filename)
+                downloads += 1
             # This additionally verifies every downloadable resource over HTTP.
             for local in pages:
                 for href in Page(local.read_text(encoding='utf-8')).links:
-                    if href.startswith('exemplos/'):
+                    if href.startswith(('exemplos/', 'downloads/')):
                         response = page.request.get(base+href, timeout=30000)
                         require(response.status == 200, f'Resource HTTP error: {href}')
                         require(response.body() == (ROOT/'docs/blog'/href).read_bytes(), f'Resource mismatch: {href}')
@@ -81,7 +89,7 @@ def exercise(base: str, screenshots: Path | None) -> dict:
         browser.close()
     return {'status': 'passed', 'base_url': base, 'page_viewports': states,
             'browser_downloads': downloads, 'viewports': ['1440x1000', '390x844'],
-            'flows': ['index-to-article', 'English edition', 'contents anchor', 'practice answer', 'download bytes']}
+            'flows': ['index-to-article', 'English content', 'legacy redirects', 'contents anchor', 'practice answer', 'ZIP, slides and guide download bytes']}
 
 
 def main() -> int:

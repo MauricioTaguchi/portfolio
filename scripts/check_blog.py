@@ -26,6 +26,8 @@ class Page(HTMLParser):
         self.title = ''
         self.description = ''
         self._in_title = False
+        self.redirect = None
+        self.robots = ''
         self.feed(text)
         self.close()
 
@@ -40,6 +42,12 @@ class Page(HTMLParser):
             self.language = attrs.get('lang')
         if tag == 'title':
             self._in_title = True
+        if tag == 'meta' and attrs.get('http-equiv', '').lower() == 'refresh':
+            value = attrs.get('content', '')
+            require(value.startswith('0; url='), 'Unsupported redirect format')
+            self.redirect = value[7:]
+        if tag == 'meta' and attrs.get('name') == 'robots':
+            self.robots = attrs.get('content', '')
         if tag == 'meta' and attrs.get('name') == 'description':
             self.description = attrs.get('content', '')
         if tag == 'link' and attrs.get('rel') == 'canonical':
@@ -76,11 +84,18 @@ def check(source: Path, published: Path) -> dict:
     canonicals = set()
     for path, page in pages.items():
         require(page.headings == 1, f'Expected one h1: {path}')
-        require(page.language in {'pt-BR', 'en'}, f'Missing/unsupported language: {path}')
+        require(page.language == 'en', f'Missing/unsupported language: {path}')
         require(bool(page.title.strip()) and bool(page.description.strip()), f'Missing metadata: {path}')
         expected = BASE + path.as_posix()
+        if page.redirect:
+            target = Path(page.redirect)
+            require(target.as_posix() == page.redirect and target in pages and target != path, f'Invalid redirect target: {path}')
+            require(pages[target].redirect is None, f'Redirect chains are not allowed: {path}')
+            require('noindex' in page.robots, f'Redirect must be excluded from indexing: {path}')
+            expected = BASE + target.as_posix()
+        else:
+            canonicals.add(expected)
         require(page.canonical == [expected], f'Invalid canonical URL: {path}')
-        canonicals.add(expected)
         for href in page.links:
             parsed = urlsplit(href)
             if parsed.scheme or parsed.netloc or href == '../':
@@ -101,7 +116,8 @@ def check(source: Path, published: Path) -> dict:
     require(len(urls) == len(set(urls)), 'Duplicate sitemap URL')
     require(set(urls) == canonicals, 'Sitemap does not match the HTML pages')
     return {'status': 'passed', 'pages': len(pages), 'local_links_and_resources': links,
-            'mirrored_files': len(paths), 'sitemap_complete': True}
+            'mirrored_files': len(paths), 'canonical_pages': len(canonicals),
+            'legacy_redirects': sum(p.redirect is not None for p in pages.values()), 'sitemap_complete': True}
 
 
 def main() -> int:
