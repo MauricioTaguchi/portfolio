@@ -30,14 +30,19 @@ def check(base,evidence):
                 try:
                     response=page.goto(base,wait_until='networkidle');assert response.status==200
                     expect(page.locator('.hero h1')).to_be_visible()
-                    expect(page.get_by_role('link',name='Download résumé',exact=True)).to_be_visible()
                     assert page.locator('a[href="mailto:mauricioryotoitataguchi@gmail.com"]').count()>=2
                     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth+1')
                     page.screenshot(path=str(evidence/f'{width}-home.png'))
-                    with page.expect_download() as d:page.get_by_role('link',name='Download résumé',exact=True).click()
-                    with tempfile.TemporaryDirectory() as temp:
-                        target=Path(temp)/'resume.pdf';d.value.save_as(target)
-                        assert target.read_bytes()==(ROOT/'docs/resume/mauricio-taguchi-resume.pdf').read_bytes()
+                    for label, filename in [('Currículo em português', 'mauricio-taguchi-curriculo-pt.pdf'), ('Résumé in English', 'mauricio-taguchi-resume.pdf')]:
+                        link = page.get_by_role('link', name=label, exact=True)
+                        expect(link).to_be_in_viewport()
+                        with page.expect_download() as d:
+                            link.click()
+                        with tempfile.TemporaryDirectory() as temp:
+                            target = Path(temp) / filename
+                            d.value.save_as(target)
+                            assert d.value.suggested_filename == filename
+                            assert target.read_bytes() == (ROOT / 'docs/resume' / filename).read_bytes()
                     if width<600:
                         page.get_by_role('button',name='Open menu',exact=True).click()
                         page.screenshot(path=str(evidence/f'{width}-menu.png'))
