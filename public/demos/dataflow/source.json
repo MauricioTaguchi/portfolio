@@ -1,0 +1,12 @@
+{
+  "repository": "MauricioTaguchi/data-analytics-platform",
+  "commit": "d61eaf9780238b1bacc741eec4f645e2f53c4360",
+  "mode": "Synthetic sample only; in-memory transformations; API requests and file upload disabled.",
+  "adaptations": [
+    "Connection button displays a demo notice",
+    "File input disabled",
+    "API interceptor rejects all requests",
+    "connect-src and form-action disabled"
+  ],
+  "source_archive_sha256": "026825fdfe956e3d06a935c919fa41ce701043745e99a39d52ad7b91ab14abae"
+}

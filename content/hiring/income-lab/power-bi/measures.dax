@@ -1,0 +1,14 @@
+Income - unweighted state mean =
+VAR p = MAX(Quarters[quarter_code]) RETURN CALCULATE(AVERAGE(Income[income_real_brl]), REMOVEFILTERS(Quarters), Quarters[quarter_code] = p)
+
+Federal units in view =
+VAR p = MAX(Quarters[quarter_code]) RETURN CALCULATE(DISTINCTCOUNT(Income[state_code]), REMOVEFILTERS(Quarters), Quarters[quarter_code] = p)
+
+Prior year income =
+VAR p = MAX(Quarters[quarter_code]) - 100 RETURN CALCULATE(AVERAGE(Income[income_real_brl]), REMOVEFILTERS(Quarters), Quarters[quarter_code] = p)
+
+Prior year federal units =
+VAR p = MAX(Quarters[quarter_code]) - 100 RETURN CALCULATE(DISTINCTCOUNT(Income[state_code]), REMOVEFILTERS(Quarters), Quarters[quarter_code] = p)
+
+YoY change =
+IF([Federal units in view] = [Prior year federal units] && [Prior year federal units] > 0, DIVIDE([Income - unweighted state mean] - [Prior year income], [Prior year income]), BLANK())

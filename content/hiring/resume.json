@@ -1,0 +1,55 @@
+{
+  "name": "Maurício Ryo Toita Taguchi",
+  "headline": "Data Analyst | SQL, Python & Power BI",
+  "email": "mauricioryotoitataguchi@gmail.com",
+  "location": "São Paulo, Brazil | Remote or hybrid opportunities",
+  "summary": "Computer Science graduate with a data analysis internship at FIPE, working with source integration, data validation, automation and reporting. Personal projects combine Python, SQL, APIs and reproducible analytics. Seeking junior data analyst and business intelligence opportunities.",
+  "skills": [
+    [
+      "Analytics & BI",
+      "SQL, Python (Pandas), R, Power BI, DAX, Excel and VBA"
+    ],
+    [
+      "Data & development",
+      "PostgreSQL, SQL Server, REST APIs, FastAPI and data quality checks"
+    ],
+    [
+      "Project tooling",
+      "Git, Docker, Pytest, GitHub Actions; React, Redis and Celery in personal projects"
+    ]
+  ],
+  "experience": {
+    "organization": "FIPE - Fundação Instituto de Pesquisas Econômicas",
+    "role": "Data Analysis Intern",
+    "dates": "June 2024 - December 2025",
+    "bullets": [
+      "Automated data preparation and analysis routines using Python, R and Excel/VBA.",
+      "Used SQL and integrated multiple sources to organize, consolidate and validate analytical inputs.",
+      "Checked data consistency and supported indicators, reports and Power BI dashboards."
+    ]
+  },
+  "projects": [
+    {
+      "name": "Brazil Income Analysis",
+      "url": "https://github.com/MauricioTaguchi/analise-renda-brasil",
+      "text": "Reproducible Python pipeline using IBGE SIDRA data, with validation across 27 federal units, an HTML dashboard and an executive summary. Separates official snapshots from synthetic learning examples."
+    },
+    {
+      "name": "DataFlow",
+      "url": "https://github.com/MauricioTaguchi/data-analytics-platform",
+      "text": "Personal reference platform for data quality and traceable transformations using FastAPI, React, PostgreSQL, Celery and Redis. Includes explicit revision history, tests and documented operating limits."
+    },
+    {
+      "name": "Technical writing",
+      "url": "https://mauriciotaguchi.com.br/blog/",
+      "text": "English tutorials on CSV validation, data revisions and SDK evaluation, with reproducible examples and stated limitations."
+    }
+  ],
+  "education": "B.Sc. in Computer Science - Universidade Paulista (UNIP) | Completed in 2026",
+  "languages": "Portuguese: native | English: advanced",
+  "links": {
+    "Portfolio": "https://mauriciotaguchi.com.br/",
+    "LinkedIn": "https://www.linkedin.com/in/mauriciotaguchi/",
+    "GitHub": "https://github.com/MauricioTaguchi"
+  }
+}

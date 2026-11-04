@@ -12,3 +12,8 @@
 /* Small editorial labels remain readable at every viewport. */
 .project-category,.image-caption,.credentials .small-label,.income-flow>.small-label,.privacy-note,.hero-bottom{font-size:12px}
 @media(max-width:600px){.eyebrow,.section-label,.hero-bio .small-label,.hero-bio>span,.project-title .project-category,.stack,.skill-tools,.contact footer{font-size:12px}.hero-bottom{font-size:10px;letter-spacing:.8px}.image-caption{max-width:calc(100% - 20px);font-size:10px}.portrait-fallback,.portrait-canvas{object-fit:cover;object-position:top center}.portrait-stage{left:30%;width:78%;height:56%}.hero-bio{max-width:140px}.hero-bio>span{max-width:110px}.project-title .project-category{font-size:10px;max-width:42%}}
+
+/* Hiring actions reuse the portfolio type and spacing system. */
+.hiring-links{display:flex;gap:24px;flex-wrap:wrap;margin-top:20px;font-size:14px}.hiring-links a{pointer-events:auto;text-decoration:underline;text-underline-offset:4px}.availability{font-size:12px!important;line-height:1.65;color:#65676b;letter-spacing:.2px;margin:15px 0 0}.project-end{flex-wrap:wrap}.site-header nav{gap:24px}
+@media(max-width:900px){.site-header nav{gap:14px;font-size:12px}.header-cta{gap:12px}}
+@media(max-width:600px){.hiring-links{gap:18px;margin-top:16px;font-size:12px}.availability{font-size:11px!important;max-width:230px}.hero-heading{z-index:5}.mobile-menu nav a{font-size:30px!important;padding:13px 0!important}.mobile-menu nav{margin-top:22px!important}.mobile-menu p{margin-top:22px!important}}
