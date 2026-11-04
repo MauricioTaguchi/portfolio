@@ -92,7 +92,7 @@ def presentation() -> bytes:
     for number, content in enumerate(slides, 1):
         slide = deck.slides.add_slide(deck.slide_layouts[6])
         slide.background.fill.solid(); slide.background.fill.fore_color.rgb = RGBColor.from_string(paper)
-        text(slide,.65,.35,1,.5,'MT.',27,blue,True)
+        text(slide,.65,.35,1,.5,'TM.',27,blue,True)
         text(slide,10.2,.45,2.4,.3,'DATA / PYTHON',12,gray)
         text(slide,.65,1.2,12,1.55,content['title'],42 if content['kind']!='cover' else 50)
         kind=content['kind']

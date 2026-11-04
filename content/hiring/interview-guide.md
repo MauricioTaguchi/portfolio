@@ -27,3 +27,7 @@ Use the English résumé for relevant international processes and adapt its emph
 ## Evidence you still need to create personally
 
 Record and present your own explanation after rehearsing it. A screen recording without a speaker is a product demonstration, not evidence that you taught an audience. Publish talks, attendance counts and community feedback only after they occur. Maintain a sustainable publishing and maintenance cadence rather than backdating activity.
+
+## Complete rehearsal copy
+
+Use [the demonstration script](demonstration-script.md) for a grounded opening, income and DataFlow walkthroughs, and two FIPE duty summaries. The incident-reconstruction prompts are not completed anecdotes. They require your real recollection before an interview.

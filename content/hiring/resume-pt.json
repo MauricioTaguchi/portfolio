@@ -1,0 +1,66 @@
+{
+  "name": "Maurício Ryo Toita Taguchi",
+  "headline": "Analista de Dados | SQL, Python e Power BI",
+  "email": "mauricioryotoitataguchi@gmail.com",
+  "location": "São Paulo, Brasil | Oportunidades remotas ou híbridas",
+  "summary": "Graduado em Ciência da Computação, com estágio em Análise de Dados na FIPE, atuando com dados econômicos e de negociações coletivas, SQL, automação em Python/R e relatórios em Power BI. Busco uma oportunidade júnior em Dados ou BI para desenvolver indicadores confiáveis e apoiar decisões de negócio.",
+  "skills": [
+    [
+      "Dados e BI",
+      "SQL, Power BI, DAX, Excel avançado, modelagem de dados, ETL/ELT e qualidade de dados"
+    ],
+    [
+      "Programação",
+      "Python (Pandas, NumPy), R, VBA, FastAPI e APIs REST"
+    ],
+    [
+      "Bancos e ferramentas",
+      "PostgreSQL, SQL Server, MySQL, Azure SQL Database, Git, Docker, testes automatizados e GitHub Actions"
+    ]
+  ],
+  "experience": {
+    "organization": "FIPE - Fundação Instituto de Pesquisas Econômicas",
+    "role": "Estagiário de Análise de Dados",
+    "dates": "Junho de 2024 - Dezembro de 2025",
+    "bullets": [
+      "Coletei, tratei e validei dados econômicos e de negociações coletivas, investigando inconsistências e consolidando bases.",
+      "Automatizei rotinas de coleta e processamento com Python, R, Excel e VBA para reduzir o trabalho manual.",
+      "Desenvolvi e mantive dashboards e indicadores com Power BI, DAX e Excel para análise e relatórios.",
+      "Utilizei SQL, bancos relacionais, APIs REST e planilhas para preparar informações para pesquisadores e gestores.",
+      "Documentei o processamento, as automações e os resultados para padronizar entregas e preservar a rastreabilidade."
+    ]
+  },
+  "projects": [
+    {
+      "name": "DataFlow | Análise e qualidade de dados",
+      "url": "https://mauriciotaguchi.com.br/case-studies/dataflow.html",
+      "repo": "https://github.com/MauricioTaguchi/data-analytics-platform",
+      "text": "Plataforma pessoal para importação, validação e transformação de dados, com histórico de versões, desfazer, processamento assíncrono e testes. Python/FastAPI, React, PostgreSQL, Celery e Redis."
+    },
+    {
+      "name": "Análise de Renda no Brasil | IBGE/SIDRA",
+      "url": "https://mauriciotaguchi.com.br/case-studies/brazil-income.html",
+      "repo": "https://github.com/MauricioTaguchi/analise-renda-brasil",
+      "text": "Pipeline reproduzível em Python/SQL com 20 trimestres e as 27 unidades federativas. Gera bases analíticas, dashboard HTML e resumo executivo, com verificações de qualidade e integração contínua."
+    }
+  ],
+  "education": "Bacharelado em Ciência da Computação - Universidade Paulista (UNIP) | 2022-2026 | Concluído em 2026",
+  "languages": "Português: nativo | Inglês: avançado | Espanhol: básico",
+  "links": {
+    "Portfólio": "https://mauriciotaguchi.com.br/",
+    "Estudos de caso": "https://mauriciotaguchi.com.br/case-studies/",
+    "LinkedIn": "https://www.linkedin.com/in/mauriciotaguchi/",
+    "GitHub": "https://github.com/MauricioTaguchi"
+  },
+  "phone": "+55 11 91591-1294",
+  "communication": {
+    "label": "Comunicação técnica",
+    "text": "Tutoriais em inglês sobre validação de CSV, revisões de dados e avaliação de SDKs, com exemplos reproduzíveis.",
+    "url": "https://mauriciotaguchi.com.br/blog/"
+  },
+  "training": [
+    "SQL Server, Azure SQL Database e Power BI - 97 horas.",
+    "Microsoft Learn - 8 módulos de Power BI concluídos: modelos semânticos, DAX, requisitos de relatórios, workspaces, gestão de modelos, distribuição de conteúdo, dashboards e design de relatórios.",
+    "Fundação Bradesco - Escola Virtual (2025): cursos selecionados de Power BI em análise, introdução à análise e preparação de dados."
+  ]
+}

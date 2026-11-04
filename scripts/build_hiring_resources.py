@@ -35,30 +35,9 @@ def page(title,description,body,relative):
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(title)} — Maurício Taguchi</title><meta name="description" content="{html.escape(description,quote=True)}"><link rel="canonical" href="{BASE}/{relative}"><link rel="stylesheet" href="/case-studies/styles.css"><link rel="icon" href="/favicon.svg"></head><body><a class="skip" href="#content">Skip to content</a><header class="top"><a class="brand" href="/">TM<span>.</span></a><nav aria-label="Main navigation"><a href="/">Portfolio</a><a href="/case-studies/">Case studies</a><a href="/blog/">Blog</a><a href="/resume/">Résumé</a></nav></header><main id="content">{body}</main><footer><span>Maurício Taguchi · Data analysis and BI</span><a href="mailto:mauricioryotoitataguchi@gmail.com">Email me</a></footer></body></html>'''
 
 def resume():
-    r=json.loads((ROOT/'content/hiring/resume.json').read_text())
-    target=PUBLIC/'resume/mauricio-taguchi-resume.pdf';target.parent.mkdir(exist_ok=True)
-    body=ParagraphStyle('body',fontName='Helvetica',fontSize=9.2,leading=13,textColor=colors.HexColor('#212735'),spaceAfter=5)
-    heading=ParagraphStyle('heading',parent=body,fontName='Helvetica-Bold',fontSize=10.5,leading=14,spaceBefore=11,spaceAfter=6,textColor=colors.HexColor('#233de5'))
-    name=ParagraphStyle('name',parent=body,fontName='Helvetica-Bold',fontSize=21,leading=25,spaceAfter=5)
-    def para(t,style=body):return Paragraph(t,style)
-    story=[para(html.escape(r['name']),name),para('<b>'+html.escape(r['headline'])+'</b>'),para(html.escape(r['location'])),para(f'<link href="mailto:{r["email"]}" color="#233de5">{r["email"]}</link>'),para(' | '.join(f'<link href="{u}" color="#233de5">{n}</link>' for n,u in r['links'].items()))]
-    story += [para('PROFILE',heading),para(html.escape(r['summary'])),para('TECHNICAL SKILLS',heading)]
-    for label,text in r['skills']:story.append(para(f'<b>{html.escape(label)}:</b> {html.escape(text)}'))
-    ex=r['experience'];story += [para('PROFESSIONAL EXPERIENCE',heading),para(f'<b>{html.escape(ex["organization"])}</b>'),para(html.escape(ex['role']+' | '+ex['dates']))]
-    for b in ex['bullets']:story.append(para('• '+html.escape(b)))
-    story.append(para('SELECTED PERSONAL PROJECTS',heading))
-    for p in r['projects']:
-        story.append(KeepTogether([para(f'<b><link href="{p["url"]}" color="#233de5">{html.escape(p["name"])}</link></b>'),para(html.escape(p['text']))]))
-    story += [para('EDUCATION & LANGUAGES',heading),para(html.escape(r['education'])),para(html.escape(r['languages']))]
-    doc=SimpleDocTemplate(str(target),pagesize=A4,leftMargin=43,rightMargin=43,topMargin=34,bottomMargin=32,title='Maurício Taguchi - Data Analyst Résumé',author=r['name'],creator='Maurício Taguchi',subject='Data Analyst and Business Intelligence',pageCompression=1)
-    def metadata(canvas,doc):canvas.setCreator('Maurício Taguchi');canvas.setAuthor(r['name'])
-    doc.build(story,onFirstPage=metadata,onLaterPages=metadata)
-    body=f'<div class="eyebrow">DATA ANALYST / JUNIOR OPPORTUNITIES</div><h1>{html.escape(r["name"])}</h1><p class="lead">{html.escape(r["headline"])}</p><p>{html.escape(r["location"])}</p><div class="actions"><a class="button" href="mauricio-taguchi-resume.pdf" download>Download résumé (PDF)</a><a class="button secondary" href="mailto:{r["email"]}">Email me</a></div><p>{html.escape(r["summary"])}</p><h2>Technical skills</h2>'
-    body+=''.join(f'<p><strong>{html.escape(l)}:</strong> {html.escape(t)}</p>' for l,t in r['skills'])
-    body+=f'<h2>Professional experience</h2><h3>{html.escape(ex["organization"])}</h3><p>{html.escape(ex["role"]+" · "+ex["dates"])}</p><ul>'+''.join('<li>'+html.escape(b)+'</li>' for b in ex['bullets'])+'</ul><h2>Personal projects</h2>'
-    body+=''.join(f'<h3><a href="{p["url"]}">{html.escape(p["name"])}</a></h3><p>{html.escape(p["text"])}</p>' for p in r['projects'])
-    body+='<h2>Education and languages</h2><p>'+html.escape(r['education'])+'</p><p>'+html.escape(r['languages'])+'</p>'
-    write(target.parent/'index.html',page('Résumé','Experience, skills and selected personal projects. Download the English résumé or contact Maurício.',body,'resume/'))
+    from build_resumes import build_resumes
+    build_resumes(ROOT, page)
+
 
 def cases(rows):
     last=max(r['quarter_code'] for r in rows);latest=[r for r in rows if r['quarter_code']==last];mean=sum(r['income_real_brl'] for r in latest)/len(latest)
