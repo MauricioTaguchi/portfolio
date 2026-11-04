@@ -4,7 +4,7 @@ Use the first-person passages only after checking that they describe your own wo
 
 ## Opening
 
-Hello, I am Maurício Taguchi, a Computer Science graduate based in São Paulo. During my data analysis internship at FIPE, I worked with economic and collective bargaining data, SQL, automation in Python and R, and reporting in Power BI. I am looking for junior data or business intelligence opportunities. I will show one analytical project and one data-quality workflow, explain the decisions, and make their limitations clear.
+Hello, I am Maurício Taguchi, a Computer Science graduate based in São Paulo. During my data analysis internship at FIPE, I worked with economic and collective bargaining data, SQL, automation in Python and R, and reporting in Power BI. I am looking for data analyst and business intelligence roles. I will show one analytical project and one data-quality workflow, explain the decisions, and make their limitations clear.
 
 ## Income demonstration
 

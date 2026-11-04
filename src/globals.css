@@ -13,6 +13,8 @@
 .project-category,.image-caption,.credentials .small-label,.privacy-note,.hero-bottom{font-size:12px}
 @media(max-width:600px){.eyebrow,.section-label,.hero-bio .small-label,.hero-bio>span,.project-title .project-category,.stack,.skill-tools,.contact footer{font-size:12px}.hero-bottom{font-size:10px;letter-spacing:.8px}.image-caption{max-width:calc(100% - 20px);font-size:10px}.portrait-fallback,.portrait-canvas{object-fit:cover;object-position:top center}.portrait-stage{left:30%;width:78%;height:56%}.hero-bio{max-width:140px}.hero-bio>span{max-width:110px}.project-title .project-category{font-size:10px;max-width:42%}}
 
+.hero-project-links{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+@media(min-width:801px) and (max-height:800px){.hero h1{font-size:clamp(72px,7.2vw,86px);margin:20px 0 24px}}
 /* Hiring actions reuse the portfolio type and spacing system. */
 .hiring-links{display:flex;flex-wrap:wrap;margin-top:20px;font-size:14px}.hiring-links a{pointer-events:auto;text-decoration:underline;text-underline-offset:4px}.hiring-links{align-items:center;column-gap:8px;row-gap:4px}
 .hiring-links a[download]{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;border:1px solid #767780;text-decoration:none;white-space:nowrap}

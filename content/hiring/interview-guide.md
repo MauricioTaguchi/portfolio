@@ -2,7 +2,7 @@
 
 ## A grounded introduction
 
-I am a Computer Science graduate based in São Paulo. During my data analysis internship at FIPE, I worked with data preparation, SQL, automation in Python and R, and reporting. My personal projects let me explore how those analytical workflows connect to software: from an IBGE data pipeline to DataFlow's quality and transformation workspace. I am looking for junior data and business intelligence roles where I can contribute to reliable analysis and communicate results clearly.
+I am a Computer Science graduate based in São Paulo. During my data analysis internship at FIPE, I worked with data preparation, SQL, automation in Python and R, and reporting. My personal projects let me explore how those analytical workflows connect to software: from an IBGE data pipeline to DataFlow's quality and transformation workspace. I am looking for data analyst and business intelligence roles where I can contribute to reliable analysis and communicate results clearly.
 
 ## Demonstration sequence
 

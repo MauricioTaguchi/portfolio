@@ -33,7 +33,7 @@ def check(base,evidence):
                     assert page.locator('a[href="mailto:mauricioryotoitataguchi@gmail.com"]').count()>=2
                     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth+1')
                     page.screenshot(path=str(evidence/f'{width}-home.png'))
-                    for label, filename in [('Currículo em português', 'mauricio-taguchi-curriculo-pt.pdf'), ('Résumé in English', 'mauricio-taguchi-resume.pdf')]:
+                    for label, filename in [('Résumé in Portuguese', 'mauricio-taguchi-curriculo-pt.pdf'), ('Résumé in English', 'mauricio-taguchi-resume.pdf')]:
                         link = page.get_by_role('link', name=label, exact=True)
                         expect(link).to_be_in_viewport()
                         with page.expect_download() as d:
@@ -43,6 +43,13 @@ def check(base,evidence):
                             d.value.save_as(target)
                             assert d.value.suggested_filename == filename
                             assert target.read_bytes() == (ROOT / 'docs/resume' / filename).read_bytes()
+                    power_bi = page.get_by_role('link', name='Power BI report and 15 DAX checks', exact=True)
+                    expect(power_bi).to_be_in_viewport()
+                    power_bi.click()
+                    expect(page.locator('#power-bi-validation')).to_be_in_viewport()
+                    expect(page.get_by_role('link', name='Download the verified Power BI report')).to_be_visible()
+                    expect(page.get_by_role('link', name='View the 15 DAX results')).to_be_visible()
+                    page.go_back()
                     if width<600:
                         page.get_by_role('button',name='Open menu',exact=True).click()
                         page.screenshot(path=str(evidence/f'{width}-menu.png'))
