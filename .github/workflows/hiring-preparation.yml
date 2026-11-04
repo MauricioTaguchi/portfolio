@@ -93,14 +93,19 @@ jobs:
           python -B scripts/check_portfolio_browser.py --evidence-dir "$RUNNER_TEMP/hiring-evidence/portfolio"
           python -B scripts/check_blog_browser.py --screenshots "$RUNNER_TEMP/hiring-evidence/blog"
           python -B scripts/check_hiring_browser.py --evidence-dir "$RUNNER_TEMP/hiring-evidence/hiring"
-      - name: Commit only verified source and publication to the feature branch
+      - name: Commit verified content without changing workflow permissions
         run: |
-          git rm .delivery/hiring-source.part1 .delivery/hiring-source.part2 .github/workflows/hiring-preparation.yml
-          git add src content public docs scripts tests HIRING_RESOURCES.md .github/workflows/blog-checks.yml .github/workflows/published-hiring-checks.yml
+          mkdir -p "$RUNNER_TEMP/hiring-evidence/reviewed-workflows"
+          cp .github/workflows/blog-checks.yml .github/workflows/published-hiring-checks.yml "$RUNNER_TEMP/hiring-evidence/reviewed-workflows/"
+          git restore .github/workflows/blog-checks.yml
+          rm .github/workflows/published-hiring-checks.yml
+          git rm .delivery/hiring-source.part1 .delivery/hiring-source.part2
+          git add src content public docs scripts tests HIRING_RESOURCES.md
           git config user.name 'Maurício Ryo Toita Taguchi'
           git config user.email 'mauricioryotoitataguchi@gmail.com'
           git commit -m 'Add recruiter access, case studies and reproducible project demonstrations'
           git push origin HEAD:feature/hiring-ready-portfolio
+          git rev-parse HEAD > "$RUNNER_TEMP/hiring-evidence/content-commit.txt"
       - name: Capture source for review
         if: always()
         run: |
