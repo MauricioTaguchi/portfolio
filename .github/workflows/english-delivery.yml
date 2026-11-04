@@ -60,7 +60,13 @@ jobs:
           for path,text in prepared:
               path.parent.mkdir(parents=True,exist_ok=True)
               path.write_text(text,encoding='utf-8')
-          print('Applied',len(prepared),'reviewed source files.')
+          path=Path('src/portfolio.tsx')
+          text=path.read_text(encoding='utf-8')
+          old='<span>0{i+1}</span>{name}'
+          if text.count(old)!=1:
+              raise SystemExit('Unexpected mobile navigation markup.')
+          path.write_text(text.replace(old,'<span aria-hidden="true">0{i+1}</span>{name}'),encoding='utf-8')
+          print('Applied',len(prepared),'reviewed source files and decorative-number accessibility correction.')
           PY
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
