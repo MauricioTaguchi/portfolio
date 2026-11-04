@@ -1,0 +1,120 @@
+name: Final materials review
+on:
+  push:
+    branches: [improvements/resume-and-final-quality]
+    paths: ['.delivery/final-materials.txt', '.github/workflows/final-materials-review.yml']
+permissions:
+  contents: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: improvements/resume-and-final-quality
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+      - name: Apply bounded source changes
+        run: |
+          python - <<'PY'
+          import base64, hashlib, json, lzma
+          from pathlib import Path
+          raw=base64.b64decode(Path('.delivery/final-materials.txt').read_text().strip(),validate=True)
+          if hashlib.sha256(raw).hexdigest()!='e52aa576d55a9e727cb8d99fc0d674432316884f1245176c4b79966495b6523d':raise SystemExit('Source checksum mismatch')
+          files=json.loads(lzma.decompress(raw))
+          allowed={'content/hiring/resume.json','scripts/build_hiring_resources.py','scripts/build_learning_resources.py','src/portfolio.tsx','src/globals.css','content/hiring/interview-guide.md','content/hiring/resume-pt.json','scripts/build_resumes.py','content/hiring/demonstration-script.md','tests/test_final_materials.py','scripts/check_final_quality.py'}
+          if set(files)!=allowed:raise SystemExit('Unexpected source inventory')
+          prepared=[]
+          for name,spec in files.items():
+              p=Path(name)
+              if p.is_symlink():raise SystemExit('Unexpected link')
+              if 'sha256' in spec:
+                  if not p.is_file() or hashlib.sha256(p.read_bytes()).hexdigest()!=spec['sha256']:raise SystemExit('Original changed: '+name)
+                  text=p.read_text();last=len(text)+1
+                  for start,end,replacement in reversed(spec['edits']):
+                      if not 0<=start<=end<last:raise SystemExit('Invalid edit range')
+                      text=text[:start]+replacement+text[end:];last=start+1
+              else:
+                  if p.exists():raise SystemExit('New path already exists: '+name)
+                  text=spec['content']
+              prepared.append((p,text))
+          for p,text in prepared:p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text)
+          print('Applied eleven reviewed source changes.')
+          PY
+      - name: Install locked build and isolated review tools
+        run: |
+          npm install --global pnpm@11.19.0
+          pnpm install --frozen-lockfile
+          python -m pip install reportlab==4.4.9 python-pptx==1.0.2 playwright==1.57.0 pypdf==6.1.1
+          npm install --prefix "$RUNNER_TEMP/review-tools" --ignore-scripts axe-core@4.10.3
+          python -m playwright install --with-deps chromium firefox
+      - name: Build both resumes, TM slides and website
+        run: |
+          python -B scripts/build_learning_resources.py
+          python -B scripts/build_hiring_resources.py
+          pnpm build
+      - name: Verify materials and examples
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/final-evidence"
+          python -B -m unittest discover -s tests -v 2>&1 | tee "$RUNNER_TEMP/final-evidence/material-tests.txt"
+          python -B -m unittest discover -s content/hiring/income-lab -v 2>&1 | tee "$RUNNER_TEMP/final-evidence/income-tests.txt"
+          python -B public/blog/exemplos/run_examples.py 2>&1 | tee "$RUNNER_TEMP/final-evidence/tutorial-tests.txt"
+          python -B scripts/check_blog.py
+          python -B scripts/check_publication.py
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          from pypdf import PdfReader
+          result=[]
+          for p in Path('public/resume').glob('*.pdf'):
+              reader=PdfReader(p)
+              if len(reader.pages)!=1:raise SystemExit('Resume must remain one readable page: '+p.name)
+              text=reader.pages[0].extract_text()
+              if not all(x in text for x in ['FIPE','97','TM.','2026']):raise SystemExit('Missing resume text')
+              result.append({'file':p.name,'pages':len(reader.pages),'selectable_text':True,'links':len(reader.pages[0].get('/Annots',[]))})
+          Path(os.environ['RUNNER_TEMP'],'final-evidence','pdf-checks.json').write_text(json.dumps(result,indent=2))
+          PY
+      - name: Exercise existing journeys
+        run: |
+          python -B scripts/check_portfolio_browser.py --evidence-dir "$RUNNER_TEMP/final-evidence/portfolio"
+          python -B scripts/check_blog_browser.py --screenshots "$RUNNER_TEMP/final-evidence/blog"
+          python -B scripts/check_hiring_browser.py --evidence-dir "$RUNNER_TEMP/final-evidence/hiring"
+      - name: Check keyboard, reflow, contrast and lab performance
+        run: python -B scripts/check_final_quality.py --evidence-dir "$RUNNER_TEMP/final-evidence/quality" --axe "$RUNNER_TEMP/review-tools/node_modules/axe-core/axe.min.js"
+      - name: Commit verified content only
+        run: |
+          git rm .delivery/final-materials.txt
+          git add content/hiring scripts src public docs tests
+          git config user.name 'Maurício Ryo Toita Taguchi'
+          git config user.email 'mauricioryotoitataguchi@gmail.com'
+          git commit -m 'Refine bilingual resumes, TM learning materials and keyboard access'
+          git push origin HEAD:improvements/resume-and-final-quality
+      - name: Retain bounded material review
+        if: always()
+        run: |
+          python - <<'PY'
+          import os,zipfile
+          from pathlib import Path
+          roots=['public/resume','public/blog/downloads','content/hiring','scripts','tests']
+          with zipfile.ZipFile(Path(os.environ['RUNNER_TEMP'])/'final-reviewed-materials.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for root in roots:
+                  for p in Path(root).rglob('*'):
+                      if p.is_file() and '__pycache__' not in p.parts and p.suffix.lower() not in {'.pyc','.ttf','.otf','.woff','.woff2'}:z.write(p,p.as_posix())
+          PY
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: final-materials-evidence
+          path: |
+            ${{ runner.temp }}/final-evidence
+            ${{ runner.temp }}/final-reviewed-materials.zip
+          retention-days: 7
