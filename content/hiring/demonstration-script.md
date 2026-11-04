@@ -32,7 +32,7 @@ The full repository describes expected revisions, operation receipts and recover
 
 ## FIPE: data-quality scope summary
 
-At FIPE, I collected, cleaned and validated economic and collective bargaining data. I investigated inconsistencies and consolidated datasets before they were used in analysis. I also used SQL and integrated relational databases, APIs and spreadsheets to prepare information for researchers and managers. Documenting processing and results was part of making the deliverables traceable.
+At FIPE, I handled data quality checks for collective bargaining reports. I investigated inconsistent records, consolidated the data, and documented how I validated it. Researchers and managers used the resulting dataset to analyze trends and prepare reports.
 
 Before using this answer as a specific example, reconstruct one real episode privately: What inconsistency did you observe? What evidence confirmed it? What exactly did you do? Who made the final business decision? What was the verified outcome? Leave unknown details blank instead of inventing them. Do not publish confidential input data.
 

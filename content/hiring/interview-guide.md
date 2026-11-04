@@ -12,7 +12,7 @@ For DataFlow, state that this is a synthetic frontend demo, not the running back
 
 ## Two FIPE stories to prepare from actual events
 
-Data quality: choose a real inconsistency you investigated. Record the source, how you noticed it, how you checked the rule, who helped decide the correct treatment and what changed. Do not invent a particular incident or disclose restricted data.
+At FIPE, I handled data quality checks for collective bargaining reports. I investigated inconsistent records, consolidated the data, and documented how I validated it. Researchers and managers used the resulting dataset to analyze trends and prepare reports.
 
 Automation: choose a routine you actually automated or supported. Explain the manual steps, your code's role, how you tested its output and how another person used it. Quote time savings only when you can support both the earlier and later measurements. A qualitative outcome is preferable to an invented percentage.
 
