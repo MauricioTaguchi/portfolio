@@ -1,0 +1,3 @@
+# Reviewed build hook required by the locked toolchain; keep other builds restricted.
+allowBuilds:
+  esbuild@0.28.0: true
