@@ -3,7 +3,7 @@ on:
   push:
     branches: [main, 'devrel/technical-blog', 'maintenance/**']
   pull_request:
-    paths: ['public/**', 'docs/**', 'index.html', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'vite.config.ts', 'scripts/**', 'tests/**', '.github/workflows/blog-checks.yml', '.github/workflows/published-blog-checks.yml']
+    paths: ['src/**', 'vendor/**', 'postcss.config.mjs', 'tsconfig*.json', 'public/**', 'docs/**', 'index.html', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'vite.config.ts', 'scripts/**', 'tests/**', '.github/workflows/blog-checks.yml', '.github/workflows/published-blog-checks.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -52,6 +52,23 @@ jobs:
         run: |
           python3 -B scripts/check_blog.py
           python3 -B scripts/check_publication.py
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Install portfolio browser test dependency
+        run: python -m pip install playwright==1.57.0
+      - name: Install Chromium for portfolio checks
+        run: python -m playwright install --with-deps chromium
+      - name: Test principal portfolio interactions without external submissions
+        run: python -B scripts/check_portfolio_browser.py --evidence-dir "${{ runner.temp }}/portfolio-evidence"
+      - name: Retain portfolio check evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: portfolio-interaction-evidence
+          path: ${{ runner.temp }}/portfolio-evidence
+          retention-days: 7
+          if-no-files-found: warn
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 12
