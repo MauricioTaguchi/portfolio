@@ -56,7 +56,7 @@ def check(base: str, evidence: Path, axe: Path):
                         page.keyboard.press('Escape');expect(page.get_by_role('dialog')).to_have_count(0)
                         expect(trigger).to_be_focused()
                     page.goto(base+'resume/',wait_until='networkidle')
-                    for label,filename in [('Download résumé (PDF)','mauricio-taguchi-resume.pdf'),('Portuguese résumé (PDF)','mauricio-taguchi-curriculo-pt.pdf')]:
+                    for label,filename in [('Download resume (PDF)','mauricio-taguchi-resume.pdf'),('Portuguese resume (PDF)','mauricio-taguchi-curriculo-pt.pdf')]:
                         anchor=page.get_by_role('link',name=label,exact=True);anchor.focus()
                         with page.expect_download() as d:page.keyboard.press('Enter')
                         got=Path(d.value.path()).read_bytes();expected=(ROOT/'docs/resume'/filename).read_bytes()
@@ -64,7 +64,7 @@ def check(base: str, evidence: Path, axe: Path):
                     if width==1440:
                         page.evaluate('document.documentElement.style.zoom="2"')
                         require(page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'200% CSS zoom overflow')
-                        expect(page.get_by_role('link',name='Portuguese résumé (PDF)',exact=True)).to_be_visible()
+                        expect(page.get_by_role('link',name='Portuguese resume (PDF)',exact=True)).to_be_visible()
                         page.screenshot(path=str(evidence/f'{name}-resume-zoom-200.png'))
                     require(not errors,'Runtime errors: '+';'.join(errors))
                     entry['checks'].append({'viewport':f'{width}x{height}','status':'passed','keyboard':'skip link; menu Enter/Escape/focus return; PDF Enter/download','runtime_errors':errors})

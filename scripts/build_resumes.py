@@ -85,7 +85,7 @@ def build_resumes(root: Path, page: Callable) -> None:
             continue
         h = '<div class="eyebrow">DATA ANALYTICS &amp; BUSINESS INTELLIGENCE</div>'
         h += f'<h1>{escape(r["name"])}</h1><p class="lead">{escape(r["headline"])}</p><p>{escape(r["location"])}</p>'
-        h += '<div class="actions"><a class="button" href="mauricio-taguchi-resume.pdf" download>Download résumé (PDF)</a><a class="button secondary" href="mauricio-taguchi-curriculo-pt.pdf" download>Portuguese résumé (PDF)</a>'
+        h += '<div class="actions"><a class="button" href="mauricio-taguchi-resume.pdf" download>Download resume (PDF)</a><a class="button secondary" href="mauricio-taguchi-curriculo-pt.pdf" download>Portuguese resume (PDF)</a>'
         h += f'<a class="button secondary" href="mailto:{escape(r["email"])}">Email me</a></div><p>{escape(r["summary"])}</p>'
         h += '<h2>Technical skills</h2>' + ''.join(f'<p><strong>{escape(k)}:</strong> {escape(v)}</p>' for k, v in r['skills'])
         h += '<h2>Professional experience</h2>'
@@ -100,5 +100,5 @@ def build_resumes(root: Path, page: Callable) -> None:
         h += ''.join('<li>' + escape(x) + '</li>' for x in r['training']) + '</ul>'
         h += '<p class="small">Listed as completed courses and modules, not as a Microsoft professional certification.</p>'
         h += '<h2>Languages</h2><p>' + escape(r['languages']) + '</p>'
-        (out / 'index.html').write_text(page('Résumé', 'Data analysis experience, selected training, personal projects and English or Portuguese résumé downloads.', h, 'resume/'), encoding='utf-8')
+        (out / 'index.html').write_text(page('Resume', 'Data analysis experience, selected training, personal projects and English or Portuguese resume downloads.', h, 'resume/'), encoding='utf-8')
     print('Built English and Portuguese résumés, with selected courses and consistent career facts.')

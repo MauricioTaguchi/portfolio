@@ -48,7 +48,7 @@ class HiringResourcesTests(unittest.TestCase):
                             kind,field=next(iter(p['field'].items()));table=tables[field['Expression']['SourceRef']['Entity']];self.assertIn(field['Property'],{x['name'] for x in table['measures' if kind=='Measure' else 'columns']})
     def test_hiring_links_in_source(self):
         s=(ROOT/'src/portfolio.tsx').read_text()
-        for filename, label in [('mauricio-taguchi-curriculo-pt.pdf', 'Résumé in Portuguese'), ('mauricio-taguchi-resume.pdf', 'Résumé in English')]:
+        for filename, label in [('mauricio-taguchi-curriculo-pt.pdf', 'Resume in Portuguese'), ('mauricio-taguchi-resume.pdf', 'Resume in English')]:
             self.assertIn('resume/' + filename, s)
             self.assertIn(label, s)
         self.assertIn('mailto:mauricioryotoitataguchi@gmail.com',s);self.assertIn('case-studies/',s)

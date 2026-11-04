@@ -33,7 +33,7 @@ def check(base,evidence):
                     assert page.locator('a[href="mailto:mauricioryotoitataguchi@gmail.com"]').count()>=2
                     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth+1')
                     page.screenshot(path=str(evidence/f'{width}-home.png'))
-                    for label, filename in [('Résumé in Portuguese', 'mauricio-taguchi-curriculo-pt.pdf'), ('Résumé in English', 'mauricio-taguchi-resume.pdf')]:
+                    for label, filename in [('Resume in Portuguese', 'mauricio-taguchi-curriculo-pt.pdf'), ('Resume in English', 'mauricio-taguchi-resume.pdf')]:
                         link = page.get_by_role('link', name=label, exact=True)
                         expect(link).to_be_in_viewport()
                         with page.expect_download() as d:
