@@ -1,28 +1,29 @@
 name: Published blog checks
 on:
-  workflow_dispatch:
-  pull_request:
-    paths: ['.github/workflows/published-blog-checks.yml']
-  workflow_run:
-    workflows: ['pages build and deployment']
-    types: [completed]
+  push:
     branches: [main]
+    paths: ['docs/blog/**', 'docs/CNAME', 'docs/index.html', 'public/CNAME', 'scripts/check_publication.py', 'scripts/check_blog_browser.py', '.github/workflows/published-blog-checks.yml']
+  workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: published-blog-main
+  cancel-in-progress: true
 jobs:
   published:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
+      - name: Wait for this checkout's exact blog bytes
+        timeout-minutes: 4
+        run: python -B scripts/check_publication.py --remote
       - name: Install browser test dependency
         run: python -m pip install playwright==1.57.0
       - name: Install Chromium

@@ -3,7 +3,7 @@ on:
   push:
     branches: [main, 'devrel/technical-blog', 'maintenance/**']
   pull_request:
-    paths: ['public/blog/**', 'docs/blog/**', 'scripts/check_blog.py', 'scripts/check_blog_browser.py', 'tests/test_blog_checks.py', '.github/workflows/blog-checks.yml', '.github/workflows/published-blog-checks.yml']
+    paths: ['public/**', 'docs/**', 'index.html', 'package.json', 'pnpm-lock.yaml', 'vite.config.ts', 'scripts/**', 'tests/**', '.github/workflows/blog-checks.yml', '.github/workflows/published-blog-checks.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,10 +26,32 @@ jobs:
         run: python scripts/check_blog.py
       - name: Verify checks also work in optimized mode
         run: python -O scripts/check_blog.py
-      - name: Test the verifier
+      - name: Check domain and homepage preservation
+        run: python -O scripts/check_publication.py
+      - name: Test the verifiers
         run: python -m unittest discover -s tests -v
       - name: Reproduce both examples and check input preservation
         run: python public/blog/exemplos/run_examples.py
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+      - name: Install the repository's package manager
+        run: npm install --global pnpm@11.19.0
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Type check and build the actual portfolio
+        run: pnpm build
+      - name: Verify clean build preserves the blog and domain
+        run: |
+          python3 -B scripts/check_blog.py
+          python3 -B scripts/check_publication.py
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 12
