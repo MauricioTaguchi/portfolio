@@ -71,6 +71,12 @@ def exercise(base: str, evidence: Path) -> dict:
                         trigger = page.get_by_role('button', name='Abrir menu', exact=True)
                         trigger.click()
                         expect(page.get_by_role('dialog')).to_be_visible()
+                        box = page.get_by_role('dialog').bounding_box()
+                        require(box is not None and box['x'] >= -1 and box['y'] >= -1
+                                and box['x'] + box['width'] <= width + 1
+                                and box['y'] + box['height'] <= height + 1,
+                                'Mobile menu extends outside the viewport')
+                        page.screenshot(path=str(evidence / f'{width}-menu.png'))
                         page.get_by_role('navigation', name='Menu móvel', exact=True).get_by_role('link', name='Projetos').click()
                         expect(page.get_by_role('dialog')).to_have_count(0)
                         require(urlsplit(page.url).fragment == 'projetos', 'Mobile navigation did not reach projects')

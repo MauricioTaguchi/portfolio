@@ -1,0 +1,5 @@
+/* A full-screen menu must not retain the dialog's centered translation.
+   Individual translate is independent from transform in the utility styles. */
+.mobile-menu {
+  translate: none !important;
+}
