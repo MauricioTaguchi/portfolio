@@ -3,7 +3,7 @@ on:
   push:
     branches: [main, 'devrel/technical-blog', 'maintenance/**']
   pull_request:
-    paths: ['public/**', 'docs/**', 'index.html', 'package.json', 'pnpm-lock.yaml', 'vite.config.ts', 'scripts/**', 'tests/**', '.github/workflows/blog-checks.yml', '.github/workflows/published-blog-checks.yml']
+    paths: ['public/**', 'docs/**', 'index.html', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'vite.config.ts', 'scripts/**', 'tests/**', '.github/workflows/blog-checks.yml', '.github/workflows/published-blog-checks.yml']
   workflow_dispatch:
 permissions:
   contents: read
