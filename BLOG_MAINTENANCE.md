@@ -1,35 +1,49 @@
 # Technical blog maintenance
 
-The blog is a static addition to the existing portfolio, not a replacement application. Its source is `public/blog/`; `docs/blog/` is the identical published copy. The existing React bundle, project images, domain settings and third-party notices are unchanged.
+The blog source is `public/blog/`; `docs/blog/` is its byte-identical published copy. The existing application, images, domain configuration and third-party notices are preserved. The homepage entry remains in source `index.html` and `docs/index.html` with the existing scoped stylesheet.
 
-## Editing an article
+## Edit and reproduce
 
-Edit the matching HTML file in `public/blog/`. Keep the visible date honest and add an updated date when a material revision is made. Each tutorial links to its source and tests. Distinguish a conceptual example, an offline test and a live integration check.
+Edit the source HTML and keep publication dates honest. Update `public/blog/sitemap.xml` when adding a page; copy the changed files to the identical paths under `docs/blog/`. A normal Vite build copies the public directory automatically. Do not edit only `docs/`.
 
-For an article-only change, copy the changed file to the same relative path under `docs/blog/`. For a normal full site build, the existing Vite build copies the public directory into docs. Do not edit only docs: a later build would discard the change.
-
-The home page entry is in both source `index.html` and the current `docs/index.html`. Its scoped CSS lives at `public/blog-entry.css` and `docs/blog-entry.css`. The source HTML keeps the entry in future builds without changing React components.
-
-## Verification
-
-From the repository root:
+From the repository root, with Python 3.11 or later:
 
 ```sh
 python -B scripts/check_blog.py
-python -B -m unittest discover -s public/blog/exemplos/validacao-csv -v
-python -B -m unittest discover -s public/blog/exemplos/revisoes -v
+python -B -m unittest discover -s tests -v
+python -B public/blog/exemplos/run_examples.py
 ```
 
-Use `-B` to avoid copying Python bytecode caches into public assets. Do not commit local reports or caches. The workflow performs the same checks.
+The example runner executes 38 CSV tests and eight revision tests, validates fixture exit codes and JSON, and verifies that fixture bytes are unchanged. Link-related tests may skip on operating systems that do not permit creating links; report skips explicitly. Reports use a temporary directory by default. To retain a report, provide an existing directory with `--output-dir`; `invalid-report.json` must not already exist.
 
-The validator has 30 tests; the in-memory revision model has eight. Those tests are not the DataFlow integration suite. The SDK article links to the actual SDK workflow evidence and states that no new live API test was run for that article.
+The CSV CLI creates output exclusively: existing files, hard links and symlinks are refused. This prevents overwriting existing destinations, but is not crash-safe atomic publication. Keep source directories trusted and inspect a command's exit code before consuming a report.
 
-Local browser checks rendered the five pages at desktop and mobile widths and inspected local links and an anchor interaction. Environment policy blocked HTTP navigation in that browser; a complete deployed-site navigation/download test was not performed there.
+The static verifier discovers pages rather than hard-coding their count. It checks resource URLs, anchors, metadata, sitemap membership and mirror bytes. It rejects bytecode caches and works with `python -O`; validation does not depend on removable assert statements. Eight independent regression tests exercise the verifier.
 
-## Publishing and rollback
+## Browser verification
 
-This repository documents GitHub Pages publishing from main and /docs. Confirm the deployment result rather than assuming a merge is already live. A source/HTML change to the existing app still requires the normal documented build when it changes generated assets.
+Browser tests are separate from the dependency-free examples:
 
-To roll back this addition, revert its merge commit through a new commit; do not reset or force-push the repository. Keep any independent changes made after publication.
+```sh
+python -m pip install playwright==1.57.0
+python -m playwright install chromium
+python -B scripts/check_blog_browser.py
+```
 
-Never publish client information, private correspondence, credentials or claims about talks that have not happened. A collection of new posts is not a long-term publication history.
+On Linux CI, install Chromium with `--with-deps`. `BROWSER_EXECUTABLE` can select an already installed Chromium. The test starts an ephemeral local server, visits every blog page at 1440x1000 and 390x844, checks content, console health, styles and overflow, then clicks through article/language navigation, a contents anchor, a practice answer and a real download. Downloaded bytes are compared with the checked-out version. It does not exercise the rest of the React application.
+
+A navigation restriction is a failure, not a reason to silently skip or claim a browser pass. The local authoring environment may only support in-memory rendering; that visual preview is not HTTP evidence.
+
+The read-only `Blog checks` workflow runs example/verifier tests with Python 3.11 and 3.13 and performs the Chromium HTTP checks. `Published blog checks` runs after a successful main-branch Pages deployment, checks out that deployment's commit and verifies the public domain:
+
+```sh
+python -B scripts/check_blog_browser.py --base-url https://mauriciotaguchi.com.br/blog/
+```
+
+A deployment success and a browser success are different results. Read the actual run and individual steps before claiming either. A public-site failure can reflect DNS, CDN propagation, network policy or a real regression; inspect it rather than suppressing it. No schedule or continuous monitoring is configured.
+
+## Publishing, evidence and rollback
+
+Use a small branch and pull request. Check the test results before merging and the Pages and published-domain results afterward. Revert through a new commit when needed; do not reset or force-push history. Keep later independent changes.
+
+These teaching tests are not the DataFlow integration suite. The SDK has its own offline and live verification boundaries. Never publish private correspondence, credentials or client data. Do not invent talks, an audience, upstream acceptance or a sustained publication history. The practice page provides preparation, not proof of an event.

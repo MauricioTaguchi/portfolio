@@ -31,3 +31,11 @@ Amostra em memória, até 10 MiB de arquivo regular e 100.000 registros. O limit
 O relatório inclui nomes de campos e posições, mas não copia os valores brutos dos registros. Preserve acesso restrito ao CSV real. Não publique dados pessoais ao abrir uma issue.
 
 Fontes técnicas: https://docs.python.org/3/library/csv.html e https://docs.python.org/3/library/decimal.html.
+
+## Preservação de relatórios
+
+`--output` exige um caminho novo. Arquivos existentes, links simbólicos e hard links são recusados, mesmo quando têm outro nome. Escolha outro nome para uma nova execução; não sobrescreva a entrada nem um diagnóstico anterior. A criação exclusiva não equivale a publicação atômica resistente a falhas de energia.
+
+`test_output_safety.py` acrescenta oito testes de regressão aos 30 testes originais. Rode `python -B -m unittest -v` com ambos os arquivos de teste presentes. Testes de links podem ser ignorados se o sistema operacional não os permitir.
+
+Na pasta `exemplos`, execute `python -B run_examples.py` para conferir as duas demonstrações e a preservação dos dados.

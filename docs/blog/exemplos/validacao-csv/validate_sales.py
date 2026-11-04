@@ -95,7 +95,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("csv_path", type=Path)
     parser.add_argument("--delimiter", choices=[",", ";", "\t"], default=",")
     parser.add_argument("--decimal-separator", choices=[".", ","], default=".")
-    parser.add_argument("--output", type=Path, help="Optional JSON report path; cannot be the input path.")
+    parser.add_argument("--output", type=Path, help="New JSON report path; existing files and links are never overwritten.")
     args = parser.parse_args(argv)
     try:
         source = args.csv_path.resolve()
@@ -110,7 +110,10 @@ def main(argv: list[str] | None = None) -> int:
         report["source"] = source.name
         payload = json.dumps(report, indent=2, ensure_ascii=False) + "\n"
         if args.output:
-            args.output.write_text(payload, encoding="utf-8")
+            # Exclusive creation also rejects hard links and dangling symlinks.
+            # Checking only resolved path names cannot detect a hard-link alias.
+            with args.output.open("x", encoding="utf-8", newline="\n") as output:
+                output.write(payload)
         sys.stdout.write(payload)
         return 0 if report["valid"] else 1
     except (OSError, UnicodeError, ValueError) as exc:
