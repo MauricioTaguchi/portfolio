@@ -17,3 +17,15 @@
 .hiring-links{display:flex;gap:24px;flex-wrap:wrap;margin-top:20px;font-size:14px}.hiring-links a{pointer-events:auto;text-decoration:underline;text-underline-offset:4px}.availability{font-size:12px!important;line-height:1.65;color:#65676b;letter-spacing:.2px;margin:15px 0 0}.project-end{flex-wrap:wrap}.site-header nav{gap:24px}
 @media(max-width:900px){.site-header nav{gap:14px;font-size:12px}.header-cta{gap:12px}}
 @media(max-width:600px){.hiring-links{gap:18px;margin-top:16px;font-size:12px}.availability{font-size:11px!important;max-width:230px}.hero-heading{z-index:5}.mobile-menu nav a{font-size:30px!important;padding:13px 0!important}.mobile-menu nav{margin-top:22px!important}.mobile-menu p{margin-top:22px!important}}
+
+/* Keyboard access must remain visible in the light message panel. */
+html{scroll-padding-top:104px}
+.prepared-message :focus-visible{outline:3px solid #233de5;outline-offset:4px}
+.mobile-menu{overflow-y:auto!important}
+@media(max-width:360px){.hero h1{font-size:56px}.hiring-links{gap:12px}.hero-bio h2{font-size:24px}.contact h2{font-size:43px}}
+
+/* Maintain readable contrast on pale section backgrounds. */
+.section-heading>p,.skill-index,.service-number{color:#62636b}
+
+/* Keep portrait pixels below the hiring links and availability copy. */
+@media(max-width:600px){.hero{min-height:960px}.portrait-stage{height:38%}}

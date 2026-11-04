@@ -3,53 +3,75 @@
   "headline": "Data Analyst | SQL, Python & Power BI",
   "email": "mauricioryotoitataguchi@gmail.com",
   "location": "São Paulo, Brazil | Remote or hybrid opportunities",
-  "summary": "Computer Science graduate with a data analysis internship at FIPE, working with source integration, data validation, automation and reporting. Personal projects combine Python, SQL, APIs and reproducible analytics. Seeking junior data analyst and business intelligence opportunities.",
+  "summary": "Computer Science graduate with a data analysis internship at FIPE, working with economic and collective bargaining data, SQL, Python/R automation and Power BI reporting. Seeking a junior Data Analyst or BI role to develop reliable metrics and support business decisions.",
   "skills": [
     [
-      "Analytics & BI",
-      "SQL, Python (Pandas), R, Power BI, DAX, Excel and VBA"
+      "Data & BI",
+      "SQL, Power BI, DAX, advanced Excel, data modeling, ETL/ELT and data quality"
     ],
     [
-      "Data & development",
-      "PostgreSQL, SQL Server, REST APIs, FastAPI and data quality checks"
+      "Programming",
+      "Python (Pandas, NumPy), R, VBA, FastAPI and REST APIs"
     ],
     [
-      "Project tooling",
-      "Git, Docker, Pytest, GitHub Actions; React, Redis and Celery in personal projects"
+      "Databases & tools",
+      "PostgreSQL, SQL Server, MySQL, Azure SQL Database, Git, Docker, automated tests and GitHub Actions"
     ]
   ],
-  "experience": {
-    "organization": "FIPE - Fundação Instituto de Pesquisas Econômicas",
-    "role": "Data Analysis Intern",
-    "dates": "June 2024 - December 2025",
-    "bullets": [
-      "Automated data preparation and analysis routines using Python, R and Excel/VBA.",
-      "Used SQL and integrated multiple sources to organize, consolidate and validate analytical inputs.",
-      "Checked data consistency and supported indicators, reports and Power BI dashboards."
-    ]
-  },
-  "projects": [
+  "experience": [
     {
-      "name": "Brazil Income Analysis",
-      "url": "https://github.com/MauricioTaguchi/analise-renda-brasil",
-      "text": "Reproducible Python pipeline using IBGE SIDRA data, with validation across 27 federal units, an HTML dashboard and an executive summary. Separates official snapshots from synthetic learning examples."
+      "organization": "Self-employed",
+      "role": "Freelance Data Analyst",
+      "dates": "August 2026 - Present",
+      "bullets": [
+        "Offer data preparation, validation, dashboards and workflow automation services using SQL, Python, Power BI and Excel."
+      ]
     },
     {
-      "name": "DataFlow",
-      "url": "https://github.com/MauricioTaguchi/data-analytics-platform",
-      "text": "Personal reference platform for data quality and traceable transformations using FastAPI, React, PostgreSQL, Celery and Redis. Includes explicit revision history, tests and documented operating limits."
-    },
-    {
-      "name": "Technical writing",
-      "url": "https://mauriciotaguchi.com.br/blog/",
-      "text": "English tutorials on CSV validation, data revisions and SDK evaluation, with reproducible examples and stated limitations."
+      "organization": "FIPE - Fundação Instituto de Pesquisas Econômicas",
+      "role": "Data Analyst Intern",
+      "dates": "June 2024 - December 2025",
+      "bullets": [
+        "Collected, cleaned and validated economic and collective bargaining data, investigating inconsistencies and consolidating datasets.",
+        "Automated recurring collection and processing with Python, R, Excel and VBA to reduce manual work.",
+        "Built and maintained Power BI, DAX and Excel dashboards and metrics for analysis and reporting.",
+        "Used SQL, relational databases, REST APIs and spreadsheets to prepare information for researchers and managers.",
+        "Documented processing, automation and results to standardize deliverables and preserve traceability."
+      ]
     }
   ],
-  "education": "B.Sc. in Computer Science - Universidade Paulista (UNIP) | Completed in 2026",
-  "languages": "Portuguese: native | English: advanced",
+  "projects": [
+    {
+      "name": "Brazil Income Analysis | IBGE/SIDRA",
+      "url": "https://mauriciotaguchi.com.br/case-studies/brazil-income.html",
+      "repo": "https://github.com/MauricioTaguchi/analise-renda-brasil",
+      "text": "Reproducible Python/SQL pipeline covering 20 quarters and all 27 federal units. Produces analytical datasets, an HTML dashboard and an executive summary with quality checks and CI.",
+      "demo": "https://mauriciotaguchi.com.br/demos/income/"
+    },
+    {
+      "name": "DataFlow | Data analytics and quality",
+      "url": "https://mauriciotaguchi.com.br/case-studies/dataflow.html",
+      "repo": "https://github.com/MauricioTaguchi/data-analytics-platform",
+      "text": "Personal platform for data import, validation and transformation with version history, undo, asynchronous processing and tests. Python/FastAPI, React, PostgreSQL, Celery and Redis.",
+      "demo": "https://mauriciotaguchi.com.br/demos/dataflow/"
+    }
+  ],
+  "education": "B.Sc. in Computer Science | Universidade Paulista (UNIP), São Paulo | Graduated August 2026",
+  "languages": "Portuguese: native | English: advanced | Spanish: basic",
   "links": {
     "Portfolio": "https://mauriciotaguchi.com.br/",
+    "Case studies": "https://mauriciotaguchi.com.br/case-studies/",
     "LinkedIn": "https://www.linkedin.com/in/mauriciotaguchi/",
     "GitHub": "https://github.com/MauricioTaguchi"
-  }
+  },
+  "communication": {
+    "label": "Technical writing",
+    "text": "English tutorials on CSV validation, data revisions and SDK evaluation, with reproducible examples.",
+    "url": "https://mauriciotaguchi.com.br/blog/"
+  },
+  "training": [
+    "SQL Server, Azure SQL Database and Power BI - 97 hours.",
+    "Microsoft Learn - 8 completed Power BI modules: semantic models, DAX, report requirements, workspaces, model management, content distribution, dashboards and report design.",
+    "Fundação Bradesco - Escola Virtual (2025): selected Power BI training in data analysis, introduction to analysis and preparing data."
+  ]
 }
