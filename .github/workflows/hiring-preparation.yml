@@ -5,42 +5,95 @@ on:
     paths: ['.github/workflows/hiring-preparation.yml', '.delivery/**']
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
-  source-review:
+  prepare:
+    if: github.ref == 'refs/heads/feature/hiring-ready-portfolio'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - name: Collect pinned public project sources
-        env:
-          OUTPUT: ${{ runner.temp }}/hiring-sources
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import io, os, urllib.request, zipfile
-          out = Path(os.environ['OUTPUT']); out.mkdir()
-          sources = {'income': ('analise-renda-brasil', '5810d34116d0e8da9ab10005c561359e73a8560a'), 'dataflow': ('data-analytics-platform', 'd61eaf9780238b1bacc741eec4f645e2f53c4360')}
-          for label, (repo, sha) in sources.items():
-              url = f'https://api.github.com/repos/MauricioTaguchi/{repo}/zipball/{sha}'
-              request = urllib.request.Request(url, headers={'User-Agent': 'portfolio-review'})
-              with urllib.request.urlopen(request, timeout=60) as response:
-                  data = response.read(30000000)
-              with zipfile.ZipFile(io.BytesIO(data)) as archive:
-                  for member in archive.infolist():
-                      parts = Path(member.filename).parts[1:]
-                      if member.is_dir() or not parts: continue
-                      relative = Path(*parts)
-                      if '..' in relative.parts: raise RuntimeError('Unsafe archive path')
-                      if label == 'income':
-                          keep = relative.as_posix().startswith(('src/', 'data/', 'docs/', 'dashboard/', 'sql/', 'tests/')) or relative.name in ('README.md', 'LICENSE')
-                      else:
-                          keep = relative.as_posix().startswith(('frontend/', 'docs/')) or relative.name in ('README.md', 'LICENSE')
-                      if keep and relative.suffix.lower() not in ('.woff', '.woff2', '.ttf', '.otf'):
-                          target = out / label / relative; target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(archive.read(member))
-          PY
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: hiring-project-sources
-          path: ${{ runner.temp }}/hiring-sources
-          retention-days: 1
+          ref: feature/hiring-ready-portfolio
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+      - name: Apply reviewed hiring resource changes
+        run: |
+          python - <<'PY'
+          import base64,hashlib,json,lzma,urllib.request
+          from pathlib import Path
+          raw=base64.b64decode(''.join(Path(f'.delivery/hiring-source.part{i}').read_text() for i in (1,2)),validate=True)
+          if hashlib.sha256(raw).hexdigest()!='1f742290cffeae25fa8629318e6603ddc023e9ef9db7db0653b095f63710ce37':raise SystemExit('Revision checksum mismatch')
+          files=json.loads(lzma.decompress(raw))
+          if len(files)!=22:raise SystemExit('Unexpected file inventory')
+          prepared=[]
+          for name,spec in files.items():
+              p=Path(name)
+              allowed=name.startswith(('src/','public/case-studies/','public/demos/','content/hiring/','scripts/','tests/')) or name in {'HIRING_RESOURCES.md','.github/workflows/blog-checks.yml','.github/workflows/published-hiring-checks.yml'}
+              if not allowed or p.is_absolute() or '..' in p.parts or p.is_symlink():raise SystemExit('Unexpected path: '+name)
+              if 'sha256' in spec:
+                  if not p.is_file() or hashlib.sha256(p.read_bytes()).hexdigest()!=spec['sha256']:raise SystemExit('Source changed: '+name)
+              elif p.exists():raise SystemExit('New path already exists: '+name)
+              if 'content' in spec:text=spec['content']
+              else:
+                  text=p.read_text();last=len(text)+1
+                  for start,end,replacement in reversed(spec['edits']):
+                      if not 0<=start<=end<last:raise SystemExit('Invalid edit range')
+                      text=text[:start]+replacement+text[end:];last=start+1
+              prepared.append((p,text))
+          for p,text in prepared:p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text)
+          url='https://raw.githubusercontent.com/MauricioTaguchi/analise-renda-brasil/5810d34116d0e8da9ab10005c561359e73a8560a/data/staging/income_by_state_quarter.csv'
+          with urllib.request.urlopen(url,timeout=40) as response:data=response.read(1000000)
+          if hashlib.sha256(data).hexdigest()!='61942149fdaad3fb9c5e899b1bf8d8d200a32c3ba5ac59cc3853f7069b247b2a':raise SystemExit('Income source checksum mismatch')
+          p=Path('public/case-studies/data/income.csv');p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
+          print('Applied reviewed files and verified pinned income snapshot.')
+          PY
+      - name: Install build and review tools
+        run: |
+          npm install --global pnpm@11.19.0
+          pnpm install --frozen-lockfile
+          python -m pip install reportlab==4.4.9 python-pptx==1.0.2 playwright==1.57.0 jsonschema==4.25.1
+          python -m playwright install --with-deps chromium
+      - name: Build hiring resources and isolated DataFlow demo
+        run: |
+          python -B scripts/build_power_bi_source.py
+          python -B scripts/build_hiring_resources.py
+          python -B scripts/build_dataflow_demo.py
+          pnpm build
+      - name: Validate examples, resources and native report schemas
+        run: |
+          python -B -m unittest discover -s tests -v
+          python -B -m unittest discover -s content/hiring/income-lab -v
+          python -B public/blog/exemplos/run_examples.py
+          python -B scripts/check_blog.py
+          python -B scripts/check_publication.py
+          python -B scripts/check_power_bi_schema.py
+      - name: Exercise portfolio, blog and hiring flows
+        run: |
+          python -B scripts/check_portfolio_browser.py --evidence-dir "$RUNNER_TEMP/hiring-evidence/portfolio"
+          python -B scripts/check_blog_browser.py --screenshots "$RUNNER_TEMP/hiring-evidence/blog"
+          python -B scripts/check_hiring_browser.py --evidence-dir "$RUNNER_TEMP/hiring-evidence/hiring"
+      - name: Commit only verified source and publication to the feature branch
+        run: |
+          git rm .delivery/hiring-source.part1 .delivery/hiring-source.part2 .github/workflows/hiring-preparation.yml
+          git add src content public docs scripts tests HIRING_RESOURCES.md .github/workflows/blog-checks.yml .github/workflows/published-hiring-checks.yml
+          git config user.name 'Maurício Ryo Toita Taguchi'
+          git config user.email 'mauricioryotoitataguchi@gmail.com'
+          git commit -m 'Add recruiter access, case studies and reproducible project demonstrations'
+          git push origin HEAD:feature/hiring-ready-portfolio
+          git archive --format=zip HEAD -o "$RUNNER_TEMP/hiring-reviewed-source.zip"
+      - name: Retain review evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: hiring-review-evidence
+          path: |
+            ${{ runner.temp }}/hiring-evidence
+            ${{ runner.temp }}/hiring-reviewed-source.zip
+          retention-days: 7
