@@ -1,0 +1,63 @@
+name: Mobile spacing review
+on:
+  push:
+    branches: [improvements/resume-and-final-quality]
+    paths: ['.github/workflows/mobile-spacing-review.yml']
+permissions:
+  contents: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: improvements/resume-and-final-quality
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Reserve readable mobile space
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('src/globals.css');text=p.read_text()
+          rule='@media(max-width:600px){.hero{min-height:960px}.portrait-stage{height:38%}}'
+          if rule in text:raise SystemExit('Mobile spacing already applied')
+          p.write_text(text+'\n/* Keep portrait pixels below the hiring links and availability copy. */\n'+rule+'\n')
+          p=Path('scripts/check_final_quality.py');text=p.read_text();target="                    page.goto(base,wait_until='networkidle');page.keyboard.press('Tab')"
+          replacement="                    page.goto(base,wait_until='networkidle')\n                    if width<600:\n                        require(page.locator('.portrait-stage').bounding_box()['y'] >= page.locator('.availability').bounding_box()['y'] + page.locator('.availability').bounding_box()['height'] + 4,'Portrait overlaps hiring copy')\n                    page.keyboard.press('Tab')"
+          if text.count(target)!=1:raise SystemExit('Keyboard test target changed')
+          p.write_text(text.replace(target,replacement))
+          PY
+      - name: Build and prepare both browsers
+        run: |
+          npm install --global pnpm@11.19.0
+          pnpm install --frozen-lockfile
+          pnpm build
+          python -m pip install playwright==1.57.0
+          npm install --prefix "$RUNNER_TEMP/review-tools" --ignore-scripts axe-core@4.10.3
+          python -m playwright install --with-deps chromium firefox
+      - name: Recheck materials and responsive interactions
+        run: |
+          python -B -m unittest discover -s tests -v
+          python -B scripts/check_blog.py
+          python -B scripts/check_publication.py
+          python -B scripts/check_portfolio_browser.py --evidence-dir "$RUNNER_TEMP/mobile-evidence/portfolio"
+          python -B scripts/check_hiring_browser.py --evidence-dir "$RUNNER_TEMP/mobile-evidence/hiring"
+          python -B scripts/check_final_quality.py --evidence-dir "$RUNNER_TEMP/mobile-evidence/quality" --axe "$RUNNER_TEMP/review-tools/node_modules/axe-core/axe.min.js"
+      - name: Commit verified spacing without changing workflows
+        run: |
+          git add src/globals.css scripts/check_final_quality.py docs
+          git config user.name 'Maurício Ryo Toita Taguchi'
+          git config user.email 'mauricioryotoitataguchi@gmail.com'
+          git commit -m 'Keep mobile hiring links clear of the portrait'
+          git push origin HEAD:improvements/resume-and-final-quality
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: mobile-spacing-evidence
+          path: ${{ runner.temp }}/mobile-evidence
+          retention-days: 7
