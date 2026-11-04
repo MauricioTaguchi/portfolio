@@ -46,7 +46,12 @@ jobs:
                   text=spec['content']
               prepared.append((p,text))
           for p,text in prepared:p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text)
-          print('Applied eleven reviewed source changes.')
+          p=Path('src/globals.css');p.write_text(p.read_text()+'\n/* Maintain readable contrast on pale section backgrounds. */\n.section-heading>p,.skill-index,.service-number{color:#62636b}\n')
+          p=Path('index.html');text=p.read_text()
+          if text.count('    <meta name="theme-color"')!=1:raise SystemExit('Critical head target changed')
+          text=text.replace('    <meta name="theme-color"','    <style>#root:empty{min-height:100svh}</style>\n    <link rel="preload" as="image" href="%BASE_URL%images/portrait.webp" fetchpriority="high" />\n    <meta name="theme-color"',1);p.write_text(text)
+          p=Path('tests/test_final_materials.py');text=p.read_text();text+='\n\nclass LoadingAndContrastTests(unittest.TestCase):\n    def test_empty_root_reserves_first_screen(self):\n        self.assertIn("#root:empty{min-height:100svh}",(ROOT/"index.html").read_text())\n    def test_portrait_preload_keeps_relative_base(self):\n        self.assertIn(\'as="image" href="%BASE_URL%images/portrait.webp" fetchpriority="high"\',(ROOT/"index.html").read_text())\n    def test_secondary_text_uses_accessible_color(self):\n        self.assertIn(".section-heading>p,.skill-index,.service-number{color:#62636b}",(ROOT/"src/globals.css").read_text())\n';p.write_text(text)
+          print('Applied reviewed source changes and measured quality fixes.')
           PY
       - name: Install locked build and isolated review tools
         run: |
@@ -93,10 +98,10 @@ jobs:
       - name: Commit verified content only
         run: |
           git rm .delivery/final-materials.txt
-          git add content/hiring scripts src public docs tests
+          git add content/hiring scripts src public docs tests index.html
           git config user.name 'Maurício Ryo Toita Taguchi'
           git config user.email 'mauricioryotoitataguchi@gmail.com'
-          git commit -m 'Refine bilingual resumes, TM learning materials and keyboard access'
+          git commit -m 'Refine bilingual resumes, TM materials and accessible stable loading'
           git push origin HEAD:improvements/resume-and-final-quality
       - name: Retain bounded material review
         if: always()
