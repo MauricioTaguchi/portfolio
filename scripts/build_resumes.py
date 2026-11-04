@@ -83,7 +83,7 @@ def build_resumes(root: Path, page: Callable) -> None:
         doc.build(story, onFirstPage=footer, onLaterPages=footer)
         if language != 'en':
             continue
-        h = '<div class="eyebrow">DATA ANALYST / JUNIOR OPPORTUNITIES</div>'
+        h = '<div class="eyebrow">DATA ANALYTICS &amp; BUSINESS INTELLIGENCE</div>'
         h += f'<h1>{escape(r["name"])}</h1><p class="lead">{escape(r["headline"])}</p><p>{escape(r["location"])}</p>'
         h += '<div class="actions"><a class="button" href="mauricio-taguchi-resume.pdf" download>Download résumé (PDF)</a><a class="button secondary" href="mauricio-taguchi-curriculo-pt.pdf" download>Portuguese résumé (PDF)</a>'
         h += f'<a class="button secondary" href="mailto:{escape(r["email"])}">Email me</a></div><p>{escape(r["summary"])}</p>'
