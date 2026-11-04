@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#3148f6"><meta name="author" content="Maurício Taguchi">
+<title>Execute, confira, explique — Maurício Taguchi</title>
+<meta name="description" content="Execute os exemplos Python, confira os diagnósticos e prepare sua demonstração técnica com dados sintéticos.">
+<link rel="canonical" href="https://mauriciotaguchi.com.br/blog/reproduzir.html">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body><a class="skip" href="#conteudo">Pular para o conteúdo</a><div class="shell">
+<header class="top"><a class="brand" href="index.html" aria-label="Maurício Taguchi — Blog">MT<span>.</span></a><nav aria-label="Navegação principal"><a href="../">Portfólio</a><a href="index.html">Blog</a><a href="reproduzir.html" aria-current="page">Reproduzir</a></nav></header>
+<main id="conteudo">
+<div class="article-head"><a class="back" href="index.html">Todos os artigos</a><h1>Execute.<br>Confira. <span>Explique.</span></h1><p class="lead">Do código à demonstração: uma sequência verificável, sem instalar bibliotecas e sem alterar os arquivos de entrada.</p><p class="byline">Maurício Taguchi · <time datetime="2026-11-03">3 de novembro de 2026</time></p></div>
+<div class="reading"><nav class="toc" aria-label="Nesta página"><strong>Comece por aqui</strong><a href="#preparar">Preparar</a><a href="#executar">Executar</a><a href="#interpretar">Interpretar</a><a href="#proteger">Preservar arquivos</a><a href="#treinar">Treinar a explicação</a><a href="#limites">Limites</a></nav>
+<div class="prose">
+<h2 id="preparar">1. Obtenha o exemplo completo</h2>
+<p>Use Python 3.11 ou superior. Para obter todos os arquivos com Git, execute os comandos abaixo em uma pasta de trabalho. Eles criam uma nova pasta <code>portfolio</code>; não os execute por cima de uma cópia com alterações locais.</p>
+<pre><code>git clone https://github.com/MauricioTaguchi/portfolio.git
+cd portfolio</code></pre>
+<p>Sem Git, use <strong>Code → Download ZIP</strong> no <a href="https://github.com/MauricioTaguchi/portfolio">repositório</a>, extraia o arquivo e abra um terminal na pasta extraída. O exemplo usa somente a biblioteca padrão do Python; não precisa de Node.js, Docker ou chave de API.</p>
+<h2 id="executar">2. Rode testes e demonstrações</h2>
+<p>No Windows:</p><pre><code>py -B public/blog/exemplos/run_examples.py</code></pre>
+<p>No macOS ou Linux:</p><pre><code>python3 -B public/blog/exemplos/run_examples.py</code></pre>
+<p>O executor roda as duas suítes, demonstra a restauração de revisões, verifica os códigos de saída das amostras e compara os arquivos de entrada antes e depois. Por padrão, o relatório é criado em uma pasta temporária e removido ao terminar.</p>
+<div class="downloads"><strong>Arquivos para inspeção</strong><br><a href="exemplos/run_examples.py" download>Executor Python</a><a href="exemplos/validacao-csv/test_output_safety.py" download>Testes de preservação</a><a href="validacao-csv.html#executar">Tutorial e amostras</a></div>
+<p>O executor depende das duas pastas completas ao seu lado. Baixar somente o arquivo acima não substitui obter o exemplo completo.</p>
+<h2 id="interpretar">3. Confira o resultado, não só a mensagem</h2>
+<p>O resumo final deve ter estes valores:</p>
+<pre><code>{
+  "status": "passed",
+  "valid_fixture_exit": 0,
+  "invalid_fixture_exit": 1,
+  "invalid_records": 6,
+  "diagnostics": 5,
+  "source_files_unchanged": true
+}</code></pre>
+<p>São 38 testes do CSV e oito do modelo de revisões. Testes de links do sistema de arquivos podem ser marcados como ignorados quando o sistema operacional não permite criá-los; leia também essa contagem. Um teste ignorado não equivale a um teste aprovado.</p>
+<p>Para guardar o relatório, crie uma pasta nova e indique-a:</p>
+<pre><code>mkdir resultados-aula
+py -B public/blog/exemplos/run_examples.py --output-dir resultados-aula</code></pre>
+<p>Troque <code>py</code> por <code>python3</code> quando necessário. O arquivo será <code>resultados-aula/invalid-report.json</code>. Uma segunda execução nessa pasta é recusada para preservar o relatório anterior. Escolha outra pasta; não apague evidências apenas para fazer o comando passar.</p>
+<h2 id="proteger">4. Preservar significa não sobrescrever</h2>
+<p>O validador agora cria o relatório em modo exclusivo. Se o destino já existe, inclusive como hard link ou link simbólico, a operação falha com código 2. Comparar apenas nomes ou caminhos resolvidos não era suficiente: dois caminhos diferentes podem representar o mesmo arquivo.</p>
+<p>Os testes novos reproduzem esse caso usando arquivos sintéticos. A proteção evita sobrescrever destinos existentes; ela não torna a gravação resistente a falhas de energia nem garante que uma gravação interrompida deixe um JSON completo. Confira a conclusão do comando antes de usar o relatório.</p>
+<p>Referência: <a href="https://docs.python.org/3.13/library/functions.html#open">modo de criação exclusiva do Python</a>.</p>
+<h2 id="treinar">5. Faça uma demonstração que você consegue explicar</h2>
+<p>Mostre a amostra problemática, execute o comando, abra o relatório e explique por que seis registros geraram cinco diagnósticos. Depois diferencie uma restauração de conteúdo de uma repetição de pedido.</p>
+<details><summary>Por que as duas duplicatas são sinalizadas?</summary><p>O arquivo não informa qual ocorrência deve prevalecer. O validador aponta as duas sem decidir silenciosamente qual venda manter.</p></details>
+<details><summary>Por que código 1 pode ser esperado?</summary><p>No validador, significa que os dados violaram uma regra. Código 2 indica problema operacional. O executor reconhece que a amostra problemática deve terminar com 1 e só então aprova essa etapa.</p></details>
+<details><summary>Restaurar a revisão 1 deveria voltar o número para 1?</summary><p>Não neste modelo. O conteúdo antigo passa a ser o conteúdo de uma nova revisão, preservando a evidência da restauração. O exemplo separado está no <a href="revisoes-dataflow.html">artigo sobre revisões</a>.</p></details>
+<details><summary>Um teste offline comprova a disponibilidade de uma API?</summary><p>Não. Uma fixture verifica um comportamento controlado. A chamada real verifica outra fronteira, em uma execução específica. Veja o <a href="avaliacao-sdk.html">artigo sobre SDKs</a>.</p></details>
+<h2 id="limites">O que este material não comprova</h2>
+<p>Os registros são fictícios. Estes testes não executam o backend do DataFlow, não comprovam disponibilidade da API Frankfurter e não certificam arquivos reais. Os exemplos são pequenos e delimitados.</p>
+<p>Uma demonstração individual deve ser apresentada como tutorial. Uma palestra, público atendido ou contribuição aceita por outra comunidade só devem ser registrados depois de acontecerem. Este material é preparação, não evidência de um evento realizado.</p>
+</div></div></main><footer><span>Maurício Taguchi · Dados, código e explicações claras.</span><a href="index.html">Voltar aos artigos</a></footer></div></body></html>

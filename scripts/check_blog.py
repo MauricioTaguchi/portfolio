@@ -1,60 +1,117 @@
-"""Check the static blog and its publication mirror with only the standard library."""
+"""Validate blog pages, local resources, sitemap and the publication mirror."""
+from __future__ import annotations
 from html.parser import HTMLParser
+import json
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "public/blog"
-PUBLISHED = ROOT / "docs/blog"
+BASE = 'https://mauriciotaguchi.com.br/blog/'
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise ValueError(message)
+
 
 class Page(HTMLParser):
-    def __init__(self, text):
+    def __init__(self, text: str):
         super().__init__()
-        self.ids = set()
-        self.links = []
+        self.ids: set[str] = set()
+        self.links: list[str] = []
         self.headings = 0
         self.language = None
+        self.canonical: list[str] = []
+        self.title = ''
+        self.description = ''
+        self._in_title = False
         self.feed(text)
+        self.close()
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
-        if "id" in attrs:
-            assert attrs["id"] not in self.ids, "Duplicate ID"
-            self.ids.add(attrs["id"])
-        if tag == "h1":
+        if 'id' in attrs:
+            require(attrs['id'] not in self.ids, f'Duplicate ID: {attrs["id"]}')
+            self.ids.add(attrs['id'])
+        if tag == 'h1':
             self.headings += 1
-        if tag == "html":
-            self.language = attrs.get("lang")
-        if "href" in attrs:
-            self.links.append(attrs["href"])
+        if tag == 'html':
+            self.language = attrs.get('lang')
+        if tag == 'title':
+            self._in_title = True
+        if tag == 'meta' and attrs.get('name') == 'description':
+            self.description = attrs.get('content', '')
+        if tag == 'link' and attrs.get('rel') == 'canonical':
+            self.canonical.append(attrs.get('href', ''))
+        for key in ('href', 'src'):
+            if key in attrs:
+                self.links.append(attrs[key])
 
-def files(directory):
-    return {p.relative_to(directory) for p in directory.rglob("*") if p.is_file() and "__pycache__" not in p.parts}
+    def handle_endtag(self, tag):
+        if tag == 'title':
+            self._in_title = False
 
-source_files = files(SOURCE)
-assert source_files, "Blog is empty"
-assert source_files == files(PUBLISHED), "Publication mirror contains different paths"
-for path in source_files:
-    assert (SOURCE/path).read_bytes() == (PUBLISHED/path).read_bytes(), f"Mirror mismatch: {path}"
+    def handle_data(self, data):
+        if self._in_title:
+            self.title += data
 
-links = 0
-pages = list(SOURCE.glob("*.html"))
-assert len(pages) == 5, "Expected index and four article/language pages"
-for file in pages:
-    page = Page(file.read_text(encoding="utf-8"))
-    assert page.headings == 1, f"Expected one h1: {file.name}"
-    assert page.language in {"pt-BR", "en"}
-    for href in page.links:
-        parsed = urlsplit(href)
-        if parsed.scheme or parsed.netloc or href == "../":
-            continue
-        target = (file.parent / unquote(parsed.path)).resolve() if parsed.path else file
-        assert target.is_relative_to(SOURCE.resolve()), "Unexpected local target"
-        assert target.exists(), f"Missing local link: {file.name} -> {href}"
-        if parsed.fragment and target.suffix == ".html":
-            assert parsed.fragment in Page(target.read_text(encoding="utf-8")).ids, f"Missing anchor: {href}"
-        links += 1
-for path in [ROOT/"index.html", ROOT/"docs/index.html"]:
-    assert "Explorar o blog" in path.read_text(encoding="utf-8")
-assert (ROOT/"public/blog-entry.css").read_bytes() == (ROOT/"docs/blog-entry.css").read_bytes()
-print(f"PASS: {len(pages)} pages, {links} local links, identical publication mirror and homepage entry.")
+
+def inventory(directory: Path) -> set[Path]:
+    return {p.relative_to(directory) for p in directory.rglob('*') if p.is_file()}
+
+
+def check(source: Path, published: Path) -> dict:
+    source = source.resolve()
+    paths = inventory(source)
+    require(bool(paths), 'Blog is empty')
+    require(paths == inventory(published), 'Publication mirror contains different paths')
+    for path in sorted(paths):
+        require('__pycache__' not in path.parts and path.suffix != '.pyc', f'Unexpected cache: {path}')
+        require((source/path).read_bytes() == (published/path).read_bytes(), f'Mirror mismatch: {path}')
+    pages = {path: Page((source/path).read_text(encoding='utf-8'))
+             for path in sorted(paths) if path.suffix == '.html'}
+    require(Path('index.html') in pages, 'Blog index is missing')
+    links = 0
+    canonicals = set()
+    for path, page in pages.items():
+        require(page.headings == 1, f'Expected one h1: {path}')
+        require(page.language in {'pt-BR', 'en'}, f'Missing/unsupported language: {path}')
+        require(bool(page.title.strip()) and bool(page.description.strip()), f'Missing metadata: {path}')
+        expected = BASE + path.as_posix()
+        require(page.canonical == [expected], f'Invalid canonical URL: {path}')
+        canonicals.add(expected)
+        for href in page.links:
+            parsed = urlsplit(href)
+            if parsed.scheme or parsed.netloc or href == '../':
+                continue
+            target = (source/path).parent / unquote(parsed.path) if parsed.path else source/path
+            target = target.resolve()
+            require(target.is_relative_to(source), f'Unexpected local target: {path} -> {href}')
+            if target.is_dir():
+                target /= 'index.html'
+            require(target.is_file(), f'Missing local resource: {path} -> {href}')
+            if parsed.fragment:
+                relative = target.relative_to(source)
+                require(relative in pages, f'Fragment points to a non-HTML file: {href}')
+                require(unquote(parsed.fragment) in pages[relative].ids, f'Missing anchor: {path} -> {href}')
+            links += 1
+    sitemap = ET.parse(source/'sitemap.xml').getroot()
+    urls = [element.text for element in sitemap.findall('{http://www.sitemaps.org/schemas/sitemap/0.9}url/{http://www.sitemaps.org/schemas/sitemap/0.9}loc')]
+    require(len(urls) == len(set(urls)), 'Duplicate sitemap URL')
+    require(set(urls) == canonicals, 'Sitemap does not match the HTML pages')
+    return {'status': 'passed', 'pages': len(pages), 'local_links_and_resources': links,
+            'mirrored_files': len(paths), 'sitemap_complete': True}
+
+
+def main() -> int:
+    try:
+        print(json.dumps(check(ROOT/'public/blog', ROOT/'docs/blog'), indent=2))
+        return 0
+    except (OSError, ValueError, ET.ParseError) as error:
+        print(f'Blog check failed: {error}')
+        return 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

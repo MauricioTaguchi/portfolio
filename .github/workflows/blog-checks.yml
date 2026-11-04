@@ -1,22 +1,48 @@
 name: Blog checks
 on:
   push:
-    branches: [main, 'devrel/technical-blog']
+    branches: [main, 'devrel/technical-blog', 'maintenance/**']
   pull_request:
-    paths: ['public/blog/**', 'docs/blog/**', 'index.html', 'docs/index.html', 'public/blog-entry.css', 'docs/blog-entry.css', 'scripts/check_blog.py', '.github/workflows/blog-checks.yml']
+    paths: ['public/blog/**', 'docs/blog/**', 'scripts/check_blog.py', 'scripts/check_blog_browser.py', 'tests/test_blog_checks.py', '.github/workflows/blog-checks.yml', '.github/workflows/published-blog-checks.yml']
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.13']
     env:
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - name: Check static pages and publication mirror
-        run: python3 scripts/check_blog.py
-      - name: Test CSV validator
-        run: python3 -m unittest discover -s public/blog/exemplos/validacao-csv -v
-      - name: Test revision example
-        run: python3 -m unittest discover -s public/blog/exemplos/revisoes -v
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Check pages, resources, sitemap and mirror
+        run: python scripts/check_blog.py
+      - name: Verify checks also work in optimized mode
+        run: python -O scripts/check_blog.py
+      - name: Test the verifier
+        run: python -m unittest discover -s tests -v
+      - name: Reproduce both examples and check input preservation
+        run: python public/blog/exemplos/run_examples.py
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Install browser test dependency
+        run: python -m pip install playwright==1.57.0
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Test navigation, language, anchors and downloads
+        run: python scripts/check_blog_browser.py
