@@ -26,3 +26,6 @@ html{scroll-padding-top:104px}
 
 /* Maintain readable contrast on pale section backgrounds. */
 .section-heading>p,.skill-index,.service-number{color:#62636b}
+
+/* Keep portrait pixels below the hiring links and availability copy. */
+@media(max-width:600px){.hero{min-height:960px}.portrait-stage{height:38%}}

@@ -43,7 +43,10 @@ def check(base: str, evidence: Path, axe: Path):
                         (evidence/'quality-results.json').write_text(json.dumps(result,indent=2))
                         if route in ('','resume/','demos/income/'):
                             page.screenshot(path=str(evidence/f'{name}-{width}-{route.split("/")[0] or "home"}.png'))
-                    page.goto(base,wait_until='networkidle');page.keyboard.press('Tab')
+                    page.goto(base,wait_until='networkidle')
+                    if width<600:
+                        require(page.locator('.portrait-stage').bounding_box()['y'] >= page.locator('.availability').bounding_box()['y'] + page.locator('.availability').bounding_box()['height'] + 4,'Portrait overlaps hiring copy')
+                    page.keyboard.press('Tab')
                     require(page.locator('.skip-link').evaluate('(e)=>e===document.activeElement'),'Skip link is not first')
                     page.keyboard.press('Enter');require(page.evaluate('document.activeElement.id')=='projetos','Skip link did not move focus')
                     if width<600:
