@@ -123,7 +123,7 @@ def exercise(base: str, evidence: Path) -> dict:
                     prepared = page.get_by_role('textbox', name='Prepared message', exact=True)
                     expect(prepared).to_be_visible()
                     text = prepared.input_value()
-                    for expected in ['Demonstration Reader', 'Automation', 'reader@example.invalid', 'Synthetic message']:
+                    for expected in ['Hello, Maurício! My name is Demonstration Reader.', 'I’d like to discuss automation.', 'reader@example.invalid', 'Synthetic message']:
                         require(expected in text, 'Prepared message lost a form value: ' + expected)
                     copy = page.get_by_role('button', name='Copy message', exact=True)
                     copy.click()

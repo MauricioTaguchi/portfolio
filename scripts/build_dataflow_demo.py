@@ -17,7 +17,7 @@ def main():
                 if not parts or item.is_dir():continue
                 relative=Path(*parts)
                 if '..' in relative.parts:raise ValueError('Unsafe source archive path')
-                if str(relative).startswith('frontend/') or str(relative)=='LICENSE':
+                if relative.parts[0]=='frontend' or relative==Path('LICENSE'):
                     dest=work/relative;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(archive.read(item))
         front=work/'frontend';app=front/'src/App.tsx'
         original=app.read_text()
@@ -26,11 +26,24 @@ def main():
         adapted=original.replace(old,'onConnect={() => setNotice("This public demo uses sample data only. API connections are disabled.")}')
         adapted=adapted.replace('disabled={combinedBusy} onChange={(event) => { const file', 'disabled={true} onChange={(event) => { const file')
         app.write_text(adapted)
+        dashboard=front/'src/components/DashboardWorkspace.tsx'
+        component=dashboard.read_text(encoding='utf-8')
+        layout='  return <section className="dashboard-layout">'
+        old_count='{data?.labels.length || data?.rows.length || 0} records visualized'
+        if component.count(layout)!=1 or component.count(old_count)!=1:
+            raise ValueError('Pinned dashboard counter changed')
+        counter='''  const resultCount = chartType === "kpi" ? Math.min(data?.labels.length ?? 0, 1)
+    : chartType === "table" ? (data?.rows.length ?? 0) : (data?.labels.length ?? 0);
+  const resultUnit = chartType === "table" ? "row" : "value";
+
+'''
+        dashboard.write_text(component.replace(layout, counter+layout).replace(old_count,'{resultCount} {resultUnit}{resultCount === 1 ? "" : "s"} shown'),encoding='utf-8')
         main=front/'src/main.tsx';main.write_text('import "./demo-boundary";\n'+main.read_text())
         (front/'src/demo-boundary.ts').write_text('import { apiClient } from "./api-client";\napiClient.interceptors.request.use(() => { throw new Error("The public demonstration has no API connection. Use a local checkout for server-backed workflows."); });\n')
-        subprocess.run(['pnpm','install','--frozen-lockfile'],cwd=front,check=True)
-        subprocess.run(['pnpm','typecheck'],cwd=front,check=True)
-        subprocess.run(['pnpm','exec','vite','build','--base','/demos/dataflow/app/'],cwd=front,check=True)
+        pnpm=shutil.which('pnpm') or 'pnpm'
+        subprocess.run([pnpm,'install','--frozen-lockfile'],cwd=front,check=True)
+        subprocess.run([pnpm,'typecheck'],cwd=front,check=True)
+        subprocess.run([pnpm,'exec','vite','build','--base','/demos/dataflow/app/'],cwd=front,check=True)
         output=args.output;output.mkdir(parents=True,exist_ok=True)
         shutil.copytree(front/'dist',output/'app',dirs_exist_ok=True)
         # No upload/account endpoint is reachable; the CSP is additional defense.
@@ -40,7 +53,7 @@ def main():
             if file.is_file():notices.append(str(file.relative_to(front/'node_modules'))+'\n'+file.read_text(errors='replace'))
         if (work/'LICENSE').exists():notices.insert(0,'DataFlow project\n'+(work/'LICENSE').read_text())
         (output/'THIRD-PARTY-NOTICES.txt').write_text('\n\n'.join(notices))
-        (output/'source.json').write_text(json.dumps({'repository':'MauricioTaguchi/data-analytics-platform','commit':COMMIT,'mode':'Synthetic sample only; in-memory transformations; API requests and file upload disabled.','adaptations':['Connection button displays a demo notice','File input disabled','API interceptor rejects all requests','connect-src and form-action disabled'],'source_archive_sha256':hashlib.sha256(data).hexdigest()},indent=2))
+        (output/'source.json').write_text(json.dumps({'repository':'MauricioTaguchi/data-analytics-platform','commit':COMMIT,'mode':'Synthetic sample only; in-memory transformations; API requests and file upload disabled.','adaptations':['Connection button displays a demo notice','File input disabled','API interceptor rejects all requests','connect-src and form-action disabled','Chart counter distinguishes values and rows'],'source_archive_sha256':hashlib.sha256(data).hexdigest()},indent=2))
         if any(p.suffix.lower() in {'.ttf','.woff','.woff2','.otf'} for p in output.rglob('*')):raise ValueError('Unexpected font files in output')
         print('Built isolated sample-only DataFlow frontend from '+COMMIT)
 if __name__=='__main__':main()

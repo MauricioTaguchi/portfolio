@@ -26,7 +26,7 @@ Open a terminal inside the csv-validation folder in the downloaded package. Chec
 
 ## Slide 6 — Read the result, not just the code.
 
-Open the generated JSON. Distinguish valid from complete: a complete read can still find invalid records, while an incomplete inspection is not approval. record counts logical records excluding the header; line_end counts physical lines including multiline quoted fields. The report omits raw cell values. The runner knows the invalid fixture should exit with 1 and checks that expectation.
+Open the generated JSON. Distinguish valid from complete: a complete read can still find invalid records, while an incomplete inspection is not approval. For a row-level issue, record gives the data row number, starting at 1 after the header. The records_checked field gives the total checked. A quoted field can span several lines, so line_end gives the last physical line read for the issue. The report omits raw cell values. The runner knows the invalid fixture should exit with 1 and checks that expectation.
 
 ## Slide 7 — Test what can go wrong, too.
 

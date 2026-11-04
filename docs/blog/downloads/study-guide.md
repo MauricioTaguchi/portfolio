@@ -18,7 +18,7 @@ Positivity is specific to this paid-sales demonstration. Refunds, adjustments an
 
 The problematic fixture has six records. ID `0002` occurs twice, producing two duplicate diagnostics. A date is impossible, an amount is missing and an amount is negative, producing the other three diagnostics. The validator does not silently decide which duplicate represents the legitimate sale.
 
-`record` is a logical row count excluding the header. `line_end` refers to the physical file, which matters for quoted fields containing a line break. Reports omit raw cell values, but the source still needs appropriate access controls.
+For a row-level issue, `record` gives the data row number, starting at 1 after the header. A header mismatch or an empty dataset is reported as record 0. `records_checked` gives the total number of data rows checked. `line_end` gives the last physical line read for the issue. A quoted field can span several lines. Reports omit raw cell values, but the source still needs appropriate access controls.
 
 ## 4. Interpret completion and exit codes
 

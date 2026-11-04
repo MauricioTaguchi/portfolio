@@ -22,7 +22,7 @@ For a semicolon-delimited file with comma decimals, explicitly select:
 python -B validate_sales.py sales.csv --delimiter ";" --decimal-separator ","
 ```
 
-`record` counts logical records excluding the header. `line_end` identifies the last physical line, including quoted multiline fields. `complete: false` means parsing or limits prevented full inspection, not that the file was approved.
+For a row-level issue, `record` gives the data row number, starting at 1 after the header. A header mismatch or an empty dataset is reported as record 0. `records_checked` gives the total number of data rows checked. `line_end` gives the last physical line read for the issue. A quoted field can span several lines. `complete: false` means parsing or limits prevented full inspection, not that the file was approved.
 
 ## Limits
 
