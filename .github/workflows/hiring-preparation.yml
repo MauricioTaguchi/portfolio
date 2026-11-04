@@ -1,0 +1,46 @@
+name: Hiring resource preparation
+on:
+  push:
+    branches: [feature/hiring-ready-portfolio]
+    paths: ['.github/workflows/hiring-preparation.yml', '.delivery/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Collect pinned public project sources
+        env:
+          OUTPUT: ${{ runner.temp }}/hiring-sources
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import io, os, urllib.request, zipfile
+          out = Path(os.environ['OUTPUT']); out.mkdir()
+          sources = {'income': ('analise-renda-brasil', '5810d34116d0e8da9ab10005c561359e73a8560a'), 'dataflow': ('data-analytics-platform', 'd61eaf9780238b1bacc741eec4f645e2f53c4360')}
+          for label, (repo, sha) in sources.items():
+              url = f'https://api.github.com/repos/MauricioTaguchi/{repo}/zipball/{sha}'
+              request = urllib.request.Request(url, headers={'User-Agent': 'portfolio-review'})
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  data = response.read(30000000)
+              with zipfile.ZipFile(io.BytesIO(data)) as archive:
+                  for member in archive.infolist():
+                      parts = Path(member.filename).parts[1:]
+                      if member.is_dir() or not parts: continue
+                      relative = Path(*parts)
+                      if '..' in relative.parts: raise RuntimeError('Unsafe archive path')
+                      if label == 'income':
+                          keep = relative.as_posix().startswith(('src/', 'data/', 'docs/', 'dashboard/', 'sql/', 'tests/')) or relative.name in ('README.md', 'LICENSE')
+                      else:
+                          keep = relative.as_posix().startswith(('frontend/', 'docs/')) or relative.name in ('README.md', 'LICENSE')
+                      if keep and relative.suffix.lower() not in ('.woff', '.woff2', '.ttf', '.otf'):
+                          target = out / label / relative; target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(archive.read(member))
+          PY
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: hiring-project-sources
+          path: ${{ runner.temp }}/hiring-sources
+          retention-days: 1
