@@ -59,3 +59,25 @@ A deployment success and a browser success are different results. Read the actua
 Use a small branch and pull request. Check the test results before merging and the Pages and published-domain results afterward. Revert through a new commit when needed; do not reset or force-push history. Keep later independent changes.
 
 These teaching tests are not the DataFlow integration suite. The SDK has separate offline and live evidence. Never publish private correspondence, credentials or client data. Do not invent talks, an audience, upstream acceptance or a sustained publication history. The practice page is preparation, not proof of an event.
+
+## English content and learning resources
+
+All public editorial content is now in English, including the portfolio, labels, accessibility text, articles and learning resources. Canonical article URLs use English names. The five previous article/practice URLs remain as one-step redirects with canonical targets and noindex metadata. Do not add redirect chains or include aliases in the sitemap.
+
+The desktop and mobile navigation both include Blog. The Reproduce page groups the examples ZIP, the ten-slide PowerPoint and the study/presentation guides. There is no empty events section and no claim of a delivered presentation.
+
+The reviewed learning sources live in `content/`. To regenerate downloads before a site build:
+
+```sh
+python -m pip install python-pptx==1.0.2
+python -B scripts/build_learning_resources.py
+pnpm build
+python -B scripts/check_blog.py
+python -B scripts/check_publication.py
+python -B -m unittest discover -s tests -v
+python -B public/blog/exemplos/run_examples.py
+```
+
+The generator uses an explicit public-file allowlist. It never packages email drafts, personal correspondence, credentials, private reports or font files. The examples ZIP runs independently of the repository and contains English folder names. Its validator logic is byte-identical to the documented source. Report creation remains exclusive, not crash-safe atomic publication.
+
+When translating or changing labels, update the browser checks to match the interface without dropping behavior checks. The checks now exercise the main-menu Blog link, canonical English articles, legacy redirects and every learning-resource download. The slide deck and speaker script are preparation materials; record a video, audience or event only after it actually exists.

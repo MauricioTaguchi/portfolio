@@ -16,7 +16,7 @@ class BlogCheckTests(unittest.TestCase):
         self.source = Path(temp.name)/'public'
         self.published = Path(temp.name)/'docs'
         self.source.mkdir()
-        self.html = '<html lang="pt-BR"><head><title>Test</title><meta name="description" content="Test"><link rel="canonical" href="https://mauriciotaguchi.com.br/blog/index.html"></head><body><h1 id="start">Test</h1><a href="#start">Start</a></body></html>'
+        self.html = '<html lang="en"><head><title>Test</title><meta name="description" content="Test"><link rel="canonical" href="https://mauriciotaguchi.com.br/blog/index.html"></head><body><h1 id="start">Test</h1><a href="#start">Start</a></body></html>'
         (self.source/'index.html').write_text(self.html)
         (self.source/'sitemap.xml').write_text('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://mauriciotaguchi.com.br/blog/index.html</loc></url></urlset>')
         self.mirror()
@@ -68,6 +68,47 @@ class BlogCheckTests(unittest.TestCase):
         self.mirror()
         with self.assertRaisesRegex(ValueError, 'Unexpected cache'):
             checks.check(self.source, self.published)
+
+class EnglishRoutingTests(unittest.TestCase):
+    setUp = BlogCheckTests.setUp
+    mirror = BlogCheckTests.mirror
+    change = BlogCheckTests.change
+
+    def add_alias(self, target='index.html', robots='noindex,follow'):
+        text = ('<html lang="en"><head><title>Moved</title>'
+                '<meta name="description" content="Moved">'
+                f'<meta http-equiv="refresh" content="0; url={target}">'
+                f'<meta name="robots" content="{robots}">'
+                f'<link rel="canonical" href="{checks.BASE}{target}"></head>'
+                f'<body><h1>Moved</h1><a href="{target}">Continue</a></body></html>')
+        (self.source/'legacy.html').write_text(text)
+        self.mirror()
+
+    def test_valid_legacy_route(self):
+        self.add_alias()
+        result = checks.check(self.source,self.published)
+        self.assertEqual(result['canonical_pages'],1)
+        self.assertEqual(result['legacy_redirects'],1)
+
+    def test_unknown_redirect_rejected(self):
+        self.add_alias('missing.html')
+        with self.assertRaisesRegex(ValueError,'Invalid redirect target'):
+            checks.check(self.source,self.published)
+
+    def test_self_redirect_rejected(self):
+        self.add_alias('legacy.html')
+        with self.assertRaisesRegex(ValueError,'Invalid redirect target'):
+            checks.check(self.source,self.published)
+
+    def test_redirect_requires_noindex(self):
+        self.add_alias(robots='index,follow')
+        with self.assertRaisesRegex(ValueError,'excluded from indexing'):
+            checks.check(self.source,self.published)
+
+    def test_non_english_page_rejected(self):
+        self.change('lang="en"','lang="fr"')
+        with self.assertRaisesRegex(ValueError,'language'):
+            checks.check(self.source,self.published)
 
 if __name__ == '__main__':
     unittest.main()

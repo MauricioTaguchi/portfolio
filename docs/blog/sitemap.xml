@@ -1,9 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://mauriciotaguchi.com.br/blog/avaliacao-sdk.html</loc></url>
-  <url><loc>https://mauriciotaguchi.com.br/blog/csv-validation-en.html</loc></url>
-  <url><loc>https://mauriciotaguchi.com.br/blog/index.html</loc></url>
-  <url><loc>https://mauriciotaguchi.com.br/blog/reproduzir.html</loc></url>
-  <url><loc>https://mauriciotaguchi.com.br/blog/revisoes-dataflow.html</loc></url>
-  <url><loc>https://mauriciotaguchi.com.br/blog/validacao-csv.html</loc></url>
-</urlset>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://mauriciotaguchi.com.br/blog/index.html</loc></url><url><loc>https://mauriciotaguchi.com.br/blog/csv-validation.html</loc></url><url><loc>https://mauriciotaguchi.com.br/blog/data-revisions.html</loc></url><url><loc>https://mauriciotaguchi.com.br/blog/sdk-evaluation.html</loc></url><url><loc>https://mauriciotaguchi.com.br/blog/reproduce.html</loc></url><url><loc>https://mauriciotaguchi.com.br/blog/study-guide.html</loc></url></urlset>

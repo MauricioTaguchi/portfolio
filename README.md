@@ -1,39 +1,32 @@
-# Maurício Taguchi — Portfólio
+# Maurício Taguchi — Portfolio
 
-Portfólio pessoal com projetos em análise de dados, automação, engenharia e desenvolvimento.
+Personal portfolio and technical blog covering data analytics, automation, engineering and development. All public editorial content and learning resources are in English.
 
-## Desenvolvimento
+## Development
 
-Requisitos: Node.js 22.13 ou superior e pnpm 11.19.
+Use Node.js 24 and the package manager declared in `package.json`.
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-## Build e publicação
+## Build and publish
 
 ```sh
-pnpm typecheck
+python -m pip install python-pptx==1.0.2
+python -B scripts/build_learning_resources.py
 pnpm build
-pnpm preview
+python -B scripts/check_blog.py
+python -B scripts/check_publication.py
 ```
 
-O build gera o site estático em `docs/`. Para publicar no GitHub Pages, selecione a branch `main` e a pasta `/docs` em Settings → Pages. Atualizações no código exigem um novo build e um commit dos arquivos gerados.
+The static site is generated into `docs/`. GitHub Pages publishes `main` and `/docs`. The custom domain is preserved through `public/CNAME`. Commit the regenerated publication files with each source change. Keep the existing dependency lockfile and restricted build-hook approval.
 
-Os caminhos de recursos são relativos: o mesmo build funciona em um endereço de projeto e na raiz de um domínio próprio. O domínio canônico é `mauriciotaguchi.com.br`.
+## Reading and learning
 
-## Estrutura
+The desktop and mobile menus link directly to the blog. The Reproduce page provides the complete examples ZIP, an editable slide deck and a study guide. Legacy article addresses remain available as English redirects; canonical addresses use English names. No talks, audience or sustained publication history are implied by these resources.
 
-- `src/portfolio.tsx`: seções e interações do portfólio.
-- `src/portrait.tsx`: retrato e suporte opcional a uma sequência de imagens.
-- `src/components/ui`: controles acessíveis baseados em Radix UI.
-- `src/globals.css`: layout responsivo, estilos e preferência por movimento reduzido.
-- `public/`: imagens locais e favicon.
-- `vendor/`: estilos auxiliares com a licença original.
+See `BLOG_MAINTENANCE.md` for verification and maintenance. The contact form prepares a message locally and offers clipboard copying and a LinkedIn link; it does not send email or store form data on a server. Project screenshots use demonstration data.
 
-React, TypeScript e Vite compõem a aplicação. Tailwind CSS dá suporte aos controles da interface; GSAP e Lenis implementam animações e rolagem.
-
-O formulário prepara uma mensagem localmente, permite copiá-la e abre o LinkedIn. Não envia e-mails nem grava os dados em um servidor. As interfaces dos projetos exibem dados demonstrativos. A sequência de retrato permanece opcional; com o manifesto vazio, é usada a imagem estática.
-
-As licenças dos componentes e bibliotecas de terceiros continuam aplicáveis.
+Third-party licenses and notices remain applicable.
