@@ -1,0 +1,36 @@
+// Conferência do snapshot IBGE/SIDRA usado no projeto BrazilIncome.
+// Esperados calculados no CSV do laboratório. Valores monetários em BRL.
+// Execute a consulta inteira após atualizar o projeto no Power BI Desktop.
+EVALUATE
+VAR Testes =
+    {
+        (1, "Linhas na tabela Income", COUNTROWS('Income'), 540),
+        (2, "Linhas na dimensão States", COUNTROWS('States'), 27),
+        (3, "Linhas na dimensão Quarters", COUNTROWS('Quarters'), 20),
+        (4, "Chaves UF e trimestre duplicadas", COUNTROWS('Income') - COUNTROWS(SUMMARIZE('Income', 'Income'[quarter_code], 'Income'[state_code])), 0),
+        (5, "Média simples entre UFs no T1 2026 (R$)", CALCULATE('Income'[Income - unweighted state mean], 'Quarters'[quarter_code] = 202601), 3437.407407407407),
+        (6, "UFs no T1 2026", CALCULATE('Income'[Federal units in view], 'Quarters'[quarter_code] = 202601), 27),
+        (7, "Média do mesmo trimestre do ano anterior (R$)", CALCULATE('Income'[Prior year income], 'Quarters'[quarter_code] = 202601), 3218.333333333333),
+        (8, "UFs no mesmo trimestre do ano anterior", CALCULATE('Income'[Prior year federal units], 'Quarters'[quarter_code] = 202601), 27),
+        (9, "Variação interanual no T1 2026 (fração)", CALCULATE('Income'[YoY change], 'Quarters'[quarter_code] = 202601), 0.068070659992),
+        (10, "Distrito Federal no T1 2026 (R$)", CALCULATE('Income'[Income - unweighted state mean], 'Quarters'[quarter_code] = 202601, 'States'[state_code] = 53), 6720),
+        (11, "UFs com filtro Distrito Federal", CALCULATE('Income'[Federal units in view], 'Quarters'[quarter_code] = 202601, 'States'[state_code] = 53), 1),
+        (12, "Média simples das UFs do Sudeste no T1 2026 (R$)", CALCULATE('Income'[Income - unweighted state mean], 'Quarters'[quarter_code] = 202601, 'States'[region] = "Southeast"), 3971.5),
+        (13, "UFs com filtro Sudeste", CALCULATE('Income'[Federal units in view], 'Quarters'[quarter_code] = 202601, 'States'[region] = "Southeast"), 4),
+        (14, "Variação no T2 2021 em branco (1 = sim)", IF(ISBLANK(CALCULATE('Income'[YoY change], 'Quarters'[quarter_code] = 202102)), 1, 0), 1),
+        (15, "Sem filtro temporal, medida usa o último trimestre", 'Income'[Income - unweighted state mean], 3437.407407407407)
+    }
+RETURN
+    SELECTCOLUMNS(
+        Testes,
+        "Ordem", [Value1],
+        "Teste", [Value2],
+        "Obtido", [Value3],
+        "Esperado", [Value4],
+        "Resultado", IF(
+            NOT(ISBLANK([Value3])) && ABS([Value3] - [Value4]) <= 0.000001,
+            "OK",
+            "CONFERIR"
+        )
+    )
+ORDER BY [Ordem] ASC

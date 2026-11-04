@@ -1,23 +1,27 @@
-# Power BI project source — Desktop validation pending
+# Brazil Income in Power BI Desktop
 
-This is an authored PBIP/PBIR source project, not a verified PBIX or a published service report. The current delivery environment did not expose the installed plugin's browser controls. DAX, Power Query refresh, interactions and rendering have NOT been executed inside Power BI.
+Validated on 4 November 2026 in Microsoft Power BI Desktop for Windows, version 2.159.1231.0. The saved report opens with Q1 2026 selected and all regions included.
 
-The model contains 540 income observations, 27 state dimension rows and 20 quarter rows. Its M partitions embed the exact reviewed snapshot, so no file paths, account credentials or live API access are required. Embedded data is intentionally static. The model has one-to-many state and quarter relationships, with single-direction filtering. State means are not additive.
+[Download the validated PBIX](BrazilIncome_Validado.pbix) · [View the report screenshot](BrazilIncome_Q1_2026.png) · [See all 15 DAX results](BrazilIncome_15_testes.png)
 
-## Acceptance checklist in Power BI Desktop
+## Desktop results
 
-1. Open BrazilIncome.pbip with a Power BI Desktop version supporting PBIP and PBIR.
-2. Refresh the embedded import tables. Confirm 540 Income, 27 States and 20 Quarters rows.
-3. Check the two relationships and sort Quarters[quarter] by quarter_code.
-4. Inspect every visual; correct any reported schema/visual compatibility errors before publishing.
-5. Select Q1 2026 and all regions. The unweighted state mean should be BRL 3,437.41. This is NOT the official national average.
-6. Filter to Distrito Federal. Q1 2026 income should be BRL 6,720.00. Select Q2 2021: the prior-year comparison must be blank.
-7. Check that the quarter slicer limits the trajectory; clear it to see the full snapshot. Measures use the latest selected quarter when more than one is selected.
-8. Save the verified report as PBIX only after refresh and visual checks. Record the actual Desktop version and result; do not mark this checklist complete in advance.
+Refresh loaded 540 state-quarter observations across 27 federal units and 20 quarters. The DAX query returned 15 rows marked `OK`, including the check for duplicate state-quarter keys. The evidence image shows the top and bottom of the same result grid, with row 8 visible in both views.
 
-The browser dashboard is a separate, tested implementation, not a substitute for these native checks. No account, workspace, license purchase or Publish to web operation has been created.
+| Scope | Result |
+| --- | --- |
+| Q1 2026, all regions | Mean BRL 3,437.41, 27 federal units and 6.81% year-over-year growth |
+| Q1 2026, Southeast | Mean BRL 3,971.50 and four federal units. The bar chart showed Espírito Santo, Minas Gerais, Rio de Janeiro and São Paulo. |
+| Q1 2026, Distrito Federal | The state-filtered DAX check returned BRL 6,720.00 and one federal unit. |
+| Q2 2021, all regions | The year-over-year card was blank. The snapshot starts in this quarter. |
 
-References:
-https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-overview
-https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-report
-https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-dataset
+Both slicers, all three cards, the state bar chart and the quarterly trend rendered in Desktop. Filtering to one quarter left one point on the trend. The income card abbreviates reais in thousands. The DAX grid reports the mean to two decimal places.
+
+## Reproduce the checks
+
+1. Open `BrazilIncome_Validado.pbix` in Power BI Desktop, or open `BrazilIncome.pbip` beside its Report and SemanticModel directories.
+2. Select **Home → Refresh**. The embedded import tables use a fixed snapshot of IBGE SIDRA table 6472, variable 5933, covering Q2 2021 through Q1 2026. Refresh reloads that snapshot.
+3. In DAX query view, select the **Validar_BrazilIncome** tab and run the full query. If needed, open a new query and paste the [validation DAX file](BrazilIncome.SemanticModel/DAXQueries/Validar_BrazilIncome.dax).
+4. In report view, select the quarters and regions above. The Distrito Federal assertion is part of the DAX query. To see all quarters on the trend, clear the quarter slicer.
+
+The model filters Income through the States and Quarters dimensions. The mean gives equal weight to each represented federal unit. An official national estimate requires population weights. The validated file uses the snapshot from [income pipeline commit 5810d34](https://github.com/MauricioTaguchi/analise-renda-brasil/tree/5810d34116d0e8da9ab10005c561359e73a8560a).

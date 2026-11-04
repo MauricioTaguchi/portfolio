@@ -32,6 +32,6 @@ https://github.com/MauricioTaguchi/analise-renda-brasil/tree/5810d34116d0e8da9ab
 
 The CSV preserves the original proper names. No population weights or sampling uncertainty are supplied here. Do not infer national income by taking the unweighted average of states. New statistical releases can revise historical observations.
 
-## Power BI project
+## Power BI Desktop
 
-The `power-bi` folder contains an authored PBIP/PBIR report and semantic model source. It has not been opened or refreshed in Power BI Desktop in this delivery. JSON/schema checks are not execution of DAX, Power Query or visual rendering. Follow its acceptance checklist before presenting it as a verified native report. The working browser dashboard is a separate implementation.
+The [validated PBIX](power-bi/BrazilIncome_Validado.pbix) includes the embedded snapshot and the 15-test DAX query. Follow the [Desktop validation record](power-bi/README.md) for the application version, expected results and screenshots. The editable PBIP source is in the same folder.

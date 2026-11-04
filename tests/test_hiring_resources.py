@@ -16,8 +16,18 @@ class HiringResourcesTests(unittest.TestCase):
             z.extractall(temp);p=subprocess.run([sys.executable,'-B','analyze.py'],cwd=temp,capture_output=True,text=True,check=True);self.assertEqual(json.loads(p.stdout)['snapshot']['rows'],540)
     def test_source_snapshot_exact(self):
         with zipfile.ZipFile(LAB) as z:self.assertEqual(z.read('income.csv'),(ROOT/'public/case-studies/data/income.csv').read_bytes())
-    def test_native_validation_not_claimed(self):
-        with zipfile.ZipFile(LAB) as z:self.assertIn('have NOT been executed',z.read('power-bi/README.md').decode())
+    def test_desktop_evidence_matches_downloads(self):
+        files = ('BrazilIncome_Validado.pbix', 'BrazilIncome_15_testes.png', 'BrazilIncome_Q1_2026.png')
+        with zipfile.ZipFile(LAB) as archive:
+            for filename in files:
+                artifact = archive.read('power-bi/' + filename)
+                self.assertEqual(artifact, (LAB.parent / filename).read_bytes())
+            with zipfile.ZipFile(io.BytesIO(archive.read('power-bi/' + files[0]))) as pbix:
+                self.assertIn('DataModel', pbix.namelist())
+                query = 'DAXQueries/Validar_BrazilIncome.dax'
+                saved = pbix.read(query).decode('utf-16-le').strip('\ufeff \r\n')
+                source = archive.read('power-bi/BrazilIncome.SemanticModel/' + query).decode().strip()
+                self.assertEqual(saved.splitlines(), source.splitlines())
     def test_powerbi_relationships(self):
         with zipfile.ZipFile(LAB) as z:m=json.loads(z.read('power-bi/BrazilIncome.SemanticModel/model.bim'))['model']
         self.assertEqual(len(m['relationships']),2);self.assertEqual({t['name'] for t in m['tables']},{'Income','States','Quarters'})
