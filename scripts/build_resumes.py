@@ -26,34 +26,43 @@ def build_resumes(root: Path, page: Callable) -> None:
         r = json.loads((root / 'content/hiring' / source).read_text(encoding='utf-8'))
         labels = LABELS[language]
         body = ParagraphStyle('body', fontName='Helvetica', fontSize=10, leading=12.7,
-                              textColor=colors.HexColor('#212735'), spaceAfter=4)
-        small = ParagraphStyle('small', parent=body, fontSize=9.2, leading=12, spaceAfter=3)
+                              textColor=colors.HexColor('#212735'), spaceAfter=2.3)
+        small = ParagraphStyle('small', parent=body, fontSize=9.2, leading=11.6, spaceAfter=2)
         heading = ParagraphStyle('heading', parent=body, fontName='Helvetica-Bold', fontSize=10,
-                                 leading=12, spaceBefore=8, spaceAfter=5, textColor=colors.HexColor('#233de5'))
+                                 leading=12, spaceBefore=6, spaceAfter=3, textColor=colors.HexColor('#233de5'))
         name = ParagraphStyle('name', parent=body, fontName='Helvetica-Bold', fontSize=20,
-                              leading=24, spaceAfter=4)
+                              leading=24, spaceAfter=2.3)
         escape = html.escape
         def para(text: str, style=body) -> Paragraph:
             return Paragraph(text, style)
         def link(label: str, url: str) -> str:
             return f'<link href="{escape(url, quote=True)}" color="#233de5">{escape(label)}</link>'
         story = [para(escape(r['name']), name), para('<b>' + escape(r['headline']) + '</b>'),
-                 para(escape(r['location']) + ' | ' + escape(r['phone']), small),
+                 para(escape(r['location']), small),
                  para(link(r['email'], 'mailto:' + r['email']) + ' | ' + ' | '.join(link(k, v) for k, v in r['links'].items()), small)]
         story += [para(labels[0], heading), para(escape(r['summary']))]
         story.append(para(labels[1], heading))
         for label, text in r['skills']:
             story.append(para('<b>' + escape(label) + ':</b> ' + escape(text)))
-        ex = r['experience']
-        story += [para(labels[2], heading), para('<b>' + escape(ex['organization']) + '</b>'),
-                  para(escape(ex['role'] + ' | ' + ex['dates']), small)]
-        for text in ex['bullets']:
-            story.append(para('• ' + escape(text)))
+        story.append(para(labels[2], heading))
+        for ex in r['experience']:
+            story.append(para('<b>' + escape(ex['role']) + '</b> | ' + escape(ex['organization'])))
+            story.append(para(escape(ex['dates']), small))
+            for text in ex['bullets']:
+                story.append(para('• ' + escape(text)))
         story.append(para(labels[3], heading))
+        def project_links(project):
+            case = 'Case study' if language == 'en' else 'Estudo de caso'
+            code = 'Source code' if language == 'en' else 'Código-fonte'
+            if project['demo'].endswith('/income/'):
+                demo = 'Interactive dashboard' if language == 'en' else 'Dashboard interativo'
+            else:
+                demo = 'Interactive demo' if language == 'en' else 'Demonstração interativa'
+            return ' · '.join((link(case, project['url']), link(demo, project['demo']), link(code, project['repo'])))
         for project in r['projects']:
             story.append(KeepTogether([
-                para('<b>' + link(project['name'], project['url']) + '</b>'),
-                para(escape(project['text'])),
+                para('<b>' + escape(project['name']) + '</b>'),
+                para(escape(project['text'])), para(project_links(project), small),
             ]))
         com = r['communication']
         story.append(para('<b>' + link(com['label'], com['url']) + ':</b> ' + escape(com['text']), small))
@@ -79,10 +88,13 @@ def build_resumes(root: Path, page: Callable) -> None:
         h += '<div class="actions"><a class="button" href="mauricio-taguchi-resume.pdf" download>Download résumé (PDF)</a><a class="button secondary" href="mauricio-taguchi-curriculo-pt.pdf" download>Portuguese résumé (PDF)</a>'
         h += f'<a class="button secondary" href="mailto:{escape(r["email"])}">Email me</a></div><p>{escape(r["summary"])}</p>'
         h += '<h2>Technical skills</h2>' + ''.join(f'<p><strong>{escape(k)}:</strong> {escape(v)}</p>' for k, v in r['skills'])
-        h += f'<h2>Professional experience</h2><h3>{escape(ex["organization"])}</h3><p>{escape(ex["role"] + " · " + ex["dates"])}</p><ul>'
-        h += ''.join('<li>' + escape(x) + '</li>' for x in ex['bullets']) + '</ul><h2>Selected personal projects</h2>'
+        h += '<h2>Professional experience</h2>'
+        for ex in r['experience']:
+            h += f'<h3>{escape(ex["role"])} | {escape(ex["organization"])}</h3><p>{escape(ex["dates"])}</p><ul>'
+            h += ''.join('<li>' + escape(x) + '</li>' for x in ex['bullets']) + '</ul>'
+        h += '<h2>Selected personal projects</h2>'
         for project in r['projects']:
-            h += f'<h3><a href="{escape(project["url"], quote=True)}">{escape(project["name"])}</a></h3><p>{escape(project["text"])}</p><p><a href="{escape(project["repo"], quote=True)}">Source repository</a></p>'
+            h += f'<h3><a href="{escape(project["url"], quote=True)}">{escape(project["name"])}</a></h3><p>{escape(project["text"])}</p><p><a href="{escape(project["repo"], quote=True)}">Source repository</a> · <a href="{escape(project["demo"], quote=True)}">Interactive demonstration</a></p>'
         h += f'<p><strong><a href="{escape(com["url"], quote=True)}">{escape(com["label"])}</a>:</strong> {escape(com["text"])}</p>'
         h += '<h2>Education</h2><p>' + escape(r['education']) + '</p><h2>Selected training</h2><ul>'
         h += ''.join('<li>' + escape(x) + '</li>' for x in r['training']) + '</ul>'

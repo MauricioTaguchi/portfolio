@@ -19,61 +19,90 @@ endobj
 <<
 /A <<
 /S /URI /Type /Action /URI (mailto:mauricioryotoitataguchi@gmail.com)
->> /Border [ 0 0 0 ] /Rect [ 48 735.1498 193.8384 746.1898 ] /Subtype /Link /Type /Annot
+>> /Border [ 0 0 0 ] /Rect [ 48 739.9498 193.8384 750.9898 ] /Subtype /Link /Type /Annot
 >>
 endobj
 5 0 obj
 <<
 /A <<
 /S /URI /Type /Action /URI (https://mauriciotaguchi.com.br/)
->> /Border [ 0 0 0 ] /Rect [ 201.3456 735.1498 235.0912 746.1898 ] /Subtype /Link /Type /Annot
+>> /Border [ 0 0 0 ] /Rect [ 201.3456 739.9498 235.0912 750.9898 ] /Subtype /Link /Type /Annot
 >>
 endobj
 6 0 obj
 <<
 /A <<
 /S /URI /Type /Action /URI (https://mauriciotaguchi.com.br/case-studies/)
->> /Border [ 0 0 0 ] /Rect [ 242.5984 735.1498 295.7744 746.1898 ] /Subtype /Link /Type /Annot
+>> /Border [ 0 0 0 ] /Rect [ 242.5984 739.9498 295.7744 750.9898 ] /Subtype /Link /Type /Annot
 >>
 endobj
 7 0 obj
 <<
 /A <<
 /S /URI /Type /Action /URI (https://www.linkedin.com/in/mauriciotaguchi/)
->> /Border [ 0 0 0 ] /Rect [ 303.2816 735.1498 338.0576 746.1898 ] /Subtype /Link /Type /Annot
+>> /Border [ 0 0 0 ] /Rect [ 303.2816 739.9498 338.0576 750.9898 ] /Subtype /Link /Type /Annot
 >>
 endobj
 8 0 obj
 <<
 /A <<
 /S /URI /Type /Action /URI (https://github.com/MauricioTaguchi)
->> /Border [ 0 0 0 ] /Rect [ 345.5648 735.1498 374.1952 746.1898 ] /Subtype /Link /Type /Annot
+>> /Border [ 0 0 0 ] /Rect [ 345.5648 739.9498 374.1952 750.9898 ] /Subtype /Link /Type /Annot
 >>
 endobj
 9 0 obj
 <<
 /A <<
-/S /URI /Type /Action /URI (https://mauriciotaguchi.com.br/case-studies/dataflow.html)
->> /Border [ 0 0 0 ] /Rect [ 48 389.4398 223.63 402.1398 ] /Subtype /Link /Type /Annot
+/S /URI /Type /Action /URI (https://mauriciotaguchi.com.br/case-studies/brazil-income.html)
+>> /Border [ 0 0 0 ] /Rect [ 48 325.1498 94.0184 336.1898 ] /Subtype /Link /Type /Annot
 >>
 endobj
 10 0 obj
 <<
 /A <<
-/S /URI /Type /Action /URI (https://mauriciotaguchi.com.br/case-studies/brazil-income.html)
->> /Border [ 0 0 0 ] /Rect [ 48 343.3398 223.63 356.0398 ] /Subtype /Link /Type /Annot
+/S /URI /Type /Action /URI (https://mauriciotaguchi.com.br/demos/income/)
+>> /Border [ 0 0 0 ] /Rect [ 101.6912 325.1498 190.1584 336.1898 ] /Subtype /Link /Type /Annot
 >>
 endobj
 11 0 obj
 <<
 /A <<
-/S /URI /Type /Action /URI (https://mauriciotaguchi.com.br/blog/)
->> /Border [ 0 0 0 ] /Rect [ 48 297.4498 123.1548 308.4898 ] /Subtype /Link /Type /Annot
+/S /URI /Type /Action /URI (https://github.com/MauricioTaguchi/analise-renda-brasil)
+>> /Border [ 0 0 0 ] /Rect [ 197.8312 325.1498 249.48 336.1898 ] /Subtype /Link /Type /Annot
 >>
 endobj
 12 0 obj
 <<
-/Annots [ 4 0 R 5 0 R 6 0 R 7 0 R 8 0 R 9 0 R 10 0 R 11 0 R ] /Contents 16 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 15 0 R /Resources <<
+/A <<
+/S /URI /Type /Action /URI (https://mauriciotaguchi.com.br/case-studies/dataflow.html)
+>> /Border [ 0 0 0 ] /Rect [ 48 268.8498 94.0184 279.8898 ] /Subtype /Link /Type /Annot
+>>
+endobj
+13 0 obj
+<<
+/A <<
+/S /URI /Type /Action /URI (https://mauriciotaguchi.com.br/demos/dataflow/)
+>> /Border [ 0 0 0 ] /Rect [ 101.6912 268.8498 169.6976 279.8898 ] /Subtype /Link /Type /Annot
+>>
+endobj
+14 0 obj
+<<
+/A <<
+/S /URI /Type /Action /URI (https://github.com/MauricioTaguchi/data-analytics-platform)
+>> /Border [ 0 0 0 ] /Rect [ 177.3704 268.8498 229.0192 279.8898 ] /Subtype /Link /Type /Annot
+>>
+endobj
+15 0 obj
+<<
+/A <<
+/S /URI /Type /Action /URI (https://mauriciotaguchi.com.br/blog/)
+>> /Border [ 0 0 0 ] /Rect [ 48 255.2498 123.1548 266.2898 ] /Subtype /Link /Type /Annot
+>>
+endobj
+16 0 obj
+<<
+/Annots [ 4 0 R 5 0 R 6 0 R 7 0 R 8 0 R 9 0 R 10 0 R 11 0 R 12 0 R 13 0 R 
+  14 0 R 15 0 R ] /Contents 20 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 19 0 R /Resources <<
 /Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
 >> /Rotate 0 
   /Trans <<
@@ -81,31 +110,31 @@ endobj
 >> /Type /Page
 >>
 endobj
-13 0 obj
+17 0 obj
 <<
-/PageMode /UseNone /Pages 15 0 R /Type /Catalog
+/PageMode /UseNone /Pages 19 0 R /Type /Catalog
 >>
 endobj
-14 0 obj
+18 0 obj
 <<
 /Author (Maur\355cio Ryo Toita Taguchi) /CreationDate (D:20000101000000+00'00') /Creator (Maur\355cio Taguchi) /Keywords () /ModDate (D:20000101000000+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (Data Analyst | SQL, Python & Power BI) /Title (Maur\355cio Taguchi - Data Analyst R\351sum\351) /Trapped /False
 >>
 endobj
-15 0 obj
+19 0 obj
 <<
-/Count 1 /Kids [ 12 0 R ] /Type /Pages
+/Count 1 /Kids [ 16 0 R ] /Type /Pages
 >>
 endobj
-16 0 obj
+20 0 obj
 <<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 2515
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 2712
 >>
 stream
-Gatm<>Bef2)L_(Xpmu*FEuZ!cH_1ck:<O'f0L353JJV`FTW)d*928)\J,Iu_bq0Br2PF7__3[sTFmgo-<6(&4Itn?Xjc&&%HfXuZ]-jfH2JG(D@.qV5)BHTC,1gc*I'67^\(@`@HB^#=fN3Icff/26[sS:E^!_/S-P)OWWm,G:[l!u;B)f,*)tkAaNE3[G2P7[+^!kdTor)Ybp>#?t2EQ&jea9`QQ4oQs+r!q]AKJ"-)p6*)A-\$@H*_k*9:`6KFqFdb`XUPkHVK1[H7e^nJqOrb7d5];92X0>A7G5t`\63rVfm]XkD`LMMpl2]BdSOG1b8J`E8WDI*';Pc\_bVgUQp59A(L5;kK'gjfelR;9!p1(Fo*VG2bMPCRf50bBY;_CRF6"1QB+/'b@.57c/+"=5FWDFm1t!;:oU1-I%-Mf][:Od)RDPl%UE]5Ru$%TKI9Z=Or:A[MbHMaf5$f=4;D%=Ka7U854`1+C\>=Jj$]`iNTTING)IU].GVIX\sN/.P\m3SFY);3J'3M%fJJldV5ak.TR>no.V$DD04Q0O@Vrmp-`-D?krXg>O[q_.BUGC1fE\*7k)7@pHHi4nX$W8-l>DB^(lYc``fiWjLSLMW\TZ#7lbD<<?.[i>q0'_d3,8VaXE0BcRYHEl+fAnkU7@pt+,+#5UW<ijZ\'\@M%n:5C*hHL1gLX4JO>JRq^g0,nH'54.MEERQ&%aEa#ql2JT#%u/QfGl+uR[cbKf(B^RGeX[7lr'(jfb#48>%[1M1mTV((SN3Ca$VlnF8dcln=fA^!`hh5V':i3?P)9J"ftpCaV`.`sB<E]_1GaH]<,;AAXt.(Gr*b#5U,9C\Inc[s!RgYneiU?Nc;d:c^oDPQ/KcAfKO+`$Q6Wr!j:Q*i&Vi6YL(DhhHe^sFG@"^aV<4%4WE1.#U%V#ucKmt/s2-J%&MP-\9S9k?_!gMNQ;U2_O-`CU,dIZ16OQ$I3T(R]=-2G_>^q-/V$%XkqT4*8`3mZ3,]KLmkg&\b1ns$>bLs1JA<bAFtp,RXUI6=$s_Z$I`*WUqt+[R0bCWQ6-*k0VAm?L!$`1N%,ID)h_Q6OdW%ffW=G)X=93dWQ1Fdo)h[og:NjeWI<O,C_lQ"k2`*cWc>onFno0%"m;#,oX5-q5kHPIcm[4,o@O_UC4ZYd2CmB:8%]CWR=*X?N:9KF7ggqMCAm_FRqu6$*[pi8]&9W`6/h:j9Y1.(6:am^ZR&$["GHlTIV)SA:^GnpK",'p!sL-e$c0H@?\7Rl-Q(gI3(B_`gimh0f)E4^k'RMg^0"6+1OV4%qn_CA-Vl"%I\k$1jI0!Xi$G^GGMX]I9U\sNShuuf5877H(L)1^Dj54LO#1'Dmg7DS@6^R#aX-uAcYF<IOq;KLB'`0Hl.]\E,rfnTVs0jlB%YK3p.";1)I4(:-h@H)ZP))9FCK*iB%Tn[?)qt$>SDFlof$-V]j9D4eGfqe+=0LmTf^9V\"AI8]Uq52-=[!`^6i7a8A7EX>A-G[GpBt;\FI`1LR7S&QC2Z9R%FVS7UZ:B?-R"g9DqV<X7p!%N+\/K`fif#u=8OmX*6).^@oU*Z(M!D(%,s`&CGGcTrsK/?,pl&Kj&fFN-Ym(;d;%F\qbkTO'tqdpNjuB#,45(8dB@5Sq2q;Pd?-J=(\um_MJD0[P.eb=CLXeP6nGXcE;cV:0+#?U+c0%6[0ng&>9PP>+Eu?F7RB,\Fub/adNBNUio\hmsST:hZVJBa&Ipma30h+EkFlD:3Bg!Nbl5_:9%RbF16P_;,In;EA6@3"*-8Uf%CZk1QV.<BLoE"4:d'T5hNPEodLS#RX.Jae$B9f8#\7Jp5]&eYHR:%Li:s=.HGJ7GY*C]lkF.Z:Coh30FWA(M7;XB$s5Z[9+AJc+tO$ONG">2dMa6&nHg;1&2j$k7L0@-?BT(MIEX?\LmZa`&C&?W+ro'Zu/tF34g'qEP!oo')r=<ZE1.u,[i*km?Fos#ri`M/pnKE.k?H1%oQJO`o6sA)97\kX40W2QjH,&s16P6CZj,nNIl6i$ah0'l8$1b7;2\:o[CXXPT-*N587<f)s[(\&)qg\0-@GJaUYAl^TqAZaK/-.Vg[&hY5uZ$l>Ft@5r;Xq#hV/80"?#$TaM(#+&3>!kUmSc:*O<"1<YenjDeM<],cppD_Z5CV>^XI[IL_O5N[]o@*DlVN1t;3`EDtH2X(`jLUS?T(\V2_X%iqF9?r<>[N@GDa+k`QeEbIRk5QVL]O(15DL0Q"5ArrW8L<g_N?E.;p]C?)WpO%b0EGkapS9bO%j7c0&l@\`5p?!lJ\>"%N@7ZC\WL&_9]0jdoFoJ[*lAa[6G]Id^_kF]MgRUV7lmu`+)rTmBm#TC@m,1%Sno602XhuV8618%R*d:DBqsVL27"Tu^GU9dp.5&pJs_J0%n>OAd*:p0["T@?fFVeQ;Ykp2NA01+J#\^Zm$qpU7fD'PGPr%<V%E5:op6Y&Scg0W#+[Dg.+7jS1.tR'\#B:TImit#VJDLOCR?R`5&l_Ar#a(Tf6@~>endstream
+Gb!#]9lo%0(>\.Tgsm*aV'nlbJ?0g3fO9LoN$50'Ggf3#k_Z)^h3&dVrpfH!942053OW)'\7.]oh=osbF3e]MeARD\Itn?Xadh4[H0"cX^F$/O[V7q!dJT!i[CUgb6a#>3qd)O*YMX-(qP9Eqlm"^em1W4'=$D2Y?Fb=8-P)OWC<SoQDe]2(c2V8iD:sF"[Q6]-0X(GJg$S/Bor)L=mCU1ff'G<N:9PUQ=&)l#6muTcQ?ftQDC?0BTdlO[J$XL/8)9d"p>?""`YYf@pY0Z?ofD4ES:hXE<b[>u$W5[FA:4'>`\--QVst'T?aVp8Ceg<98TQ=97e=KWM?/4eBA\LfW#2eKPOE\>?ClS9fKDC0k@%;gEQYNS+D((4B66YM^F'Lc2q^g#oES+P/Q[$LXu30<]DZA4`HTM8GfWj8)m@=b@s6C;[j4[N*_V8`'`0=g=E_e"R;nCI<h"dU&]s]LW[pq7-Fg4dYgmr%LI,Utf^<$"k:h)J@A>_91O1M0oA=,r6u5,!Xf74>r$h(p]ZV#G?-??kUT?@aRZl%fBH+&)/iXI-2]dt-UF^R@ZB+gU2Mo.L8Raih<:[XQ^7l/I6NLWEbKjh]af'*hT\";akG,WOH<XKiG:\WV0pKd@cVR?B;"-=&ZrAU!)%_3HZ5#*O9Hc/qLdI:rEGqjY@SJDKZgi.ud&g:)7(Ooji1WhU,!nC);(1IlLRG[2>FufAVNsoOk'jYB;m#E\Qc/Gg-7ffYF0iZjcq/4U<-ZQ^)<Z0)7fT4(:j77c+cG)dbUJaf>pFg9A%BT7Z![reQgbE[U?s9g[hVPo>`4h^9b@niL'cS99h""/V;aA#T9"^K0?1oGKP#^n-^.^#^?kpFilFgj#GUq.mWsqV7[]`$#7d:7rc*`_2[h[&B_3P1YuBR*OV&e,/fe%VGs@bAD.)a4hfBQkCfBXsb<)^o;^I"S,_87BI4C`-<FZ@LR<Id<:SsV^[gl\)o^ubQcl(<c?ok_K>`NE;_M;;=&"9Uf^!H#/9`FCC/3o.4H-)k@oe5*^3a4(O1PB,6$?a7O6_?:1dbnc@\G]mKQ9ucNjA:Tgb^F&r+cdMmR4X(t[1o]4K@&+VXll6]B2<idQMj:Zg%b.Bb$akfFEBMa>mtN%YQN_B*>(8DMY#JnH]M)H`?'&Qa4Kd)ZB"%$8$s+UJsZ!"@21Q=QT8a)Du'LJUT*7AVcg,*+TLW*__#bUd4qf:DO3Oo?\9&/JZlo79NfYakQ]!IQ1%RUX+b(6.VRD?M<e:#<]OIg[3>b!%J;?S]ten=neu*P900Jfh!kjij6ME_fXAP%!5`hEjPqcrVa)VQ$`uB`FXAlRMj?\.Y.s-d1JK+daK&@g7[mqrjjienO/l^hbYrD`dtY!&4QOTc+i`\?XVG-V6I3\=d'1k$4E;j/3D71V-G_!YnEGIdTLT>UUc4r#Z"-<Gi"M]7<6:eFTIKVkc$U`DJ<iuHT%/&\G,P3=k=_TknpR_e?cBof.:^WR_c$<3PsepASZ^[I"e([X!IGL6(&A"JM/mQ9_G^#0>A*U][9o*C-X8^S7@[MU0PmO&rpsf13mb$Y+#:`7N*Sf`m?FLDia2<.qLd2pp^Hmc_Z<D$&<3!X=DT-j)maUh$jmFM(1`P6ET"s7U``)91r?5Tm#6:GYF,`!>jWaL\RS9;XEClR3dAB6:F$F%+A^?OGSP;F6QlrOo=/a6B1=k[8GqOZ<$,Y+Ojpsq/N910nZ>p7fg6PC=7=Xkdu2gKLtQGs)U:jN"S"1P3Wc&8:L'n7e?'jlW/,)AeUJFenn;D>,"d+53WSA*)P<O\hTs3>Q\/I_>!9?C6o_qs\kTp]1bf$f;WEobbFf5OVP%tr1,<i$ejdJsn.64IBZG$0mB3`-Wl3nar%;:H#RQR6*,oR-$H0#XZO]8VFL69_X?]XoosAFWs#C$8\Zc!Afp)7BYb:*$SL4_BRtC4Raam8?iO?[YiOBq%If&UWnWFQNh<Dl?l/RFI5Nk:ZU0n]=.lu?9&B@t%-?Boj'Lo_n9[-Z/a<SJ>M0*?oh-H_D[nnJnp)=+,ht(2OJMdj""_]JrY<h!!JM$\$\LJ6@;lWI?=p_o8ofZA\!2:%K0`\>K-D]?T^jIC.C;!3VQ%D'=GNu;-l.:)=1K:p>!\5Wj1_#Jp4+"m"ON/>s\&0PR7"#=0K3i,Zq#:RY:O_>gn>P"54)HqObm=-[';7Ds=/i%(>:#4DH.&D`@D,p[6)/N>$b[`?$Rii#9n:c5p@Z87"F)DF;k-!R7*JF+,*%$@neMU+<Ma[6K4,2M:V`hB<.a\P*]lF]1*"LmV:TVK2d\DO*)\76mOWH'VWcEIjW/b@Ke:f1R3@LM#W1OcebF/>Ssj/[lFB&q5;1>A,H?^N[D"Kls,_16JMOt[N%`0ekB._j^#%VnnuJZQX7rWL7?:6$p.nuO;85aS'OEr8]V+p1qQ@=!P6dH'niENP'QXUcYeDqrcRP-43I/gLrstnc1c1XrE>GOse&l-O^^EVM`Jr0n`IYF'6_EAO^&*?h2n*3FQ!gmS,B,EXP=>Jo6]H-bLhj7hl\!^P^7ZaC#h"@s"t38L&kW:BKU8(R=.qB*'OEZ@P^iAW`2OTcmmDo^=,bV,YJ&D61KnFWC2?\!p9.5(Q.BS[SaAgN*sAcsZs&n,0$_3?c:>:rhJ9Q,FT-H>Ls-sU5T:P\5#BC<PIoSTqhP'TnN32A=_b.6W^QWt7!eGhSeUI[~>endstream
 endobj
 xref
-0 17
+0 21
 0000000000 65535 f 
 0000000061 00000 n 
 0000000102 00000 n 
@@ -116,23 +145,27 @@ xref
 0000000886 00000 n 
 0000001082 00000 n 
 0000001268 00000 n 
-0000001469 00000 n 
-0000001676 00000 n 
-0000001859 00000 n 
-0000002127 00000 n 
-0000002197 00000 n 
-0000002554 00000 n 
-0000002615 00000 n 
+0000001475 00000 n 
+0000001672 00000 n 
+0000001878 00000 n 
+0000002081 00000 n 
+0000002280 00000 n 
+0000002491 00000 n 
+0000002674 00000 n 
+0000002973 00000 n 
+0000003043 00000 n 
+0000003400 00000 n 
+0000003461 00000 n 
 trailer
 <<
 /ID 
 [<64b1eafddd6216d247a923b745b27a53><64b1eafddd6216d247a923b745b27a53>]
 % ReportLab generated PDF document -- digest (opensource)
 
-/Info 14 0 R
-/Root 13 0 R
-/Size 17
+/Info 18 0 R
+/Root 17 0 R
+/Size 21
 >>
 startxref
-5222
+6265
 %%EOF

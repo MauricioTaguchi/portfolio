@@ -6,7 +6,7 @@ LAB=ROOT/'public/case-studies/downloads/income-analysis-lab.zip'
 class HiringResourcesTests(unittest.TestCase):
     def test_resume_is_pdf(self):self.assertTrue((ROOT/'public/resume/mauricio-taguchi-resume.pdf').read_bytes().startswith(b'%PDF-'))
     def test_resume_facts_match(self):
-        text=(ROOT/'public/resume/index.html').read_text();self.assertIn('June 2024 - December 2025',text);self.assertIn('Completed in 2026',text)
+        text=(ROOT/'public/resume/index.html').read_text();self.assertIn('June 2024 - December 2025',text);self.assertIn('Graduated August 2026',text)
     def test_archive_contains_only_lab(self):
         with zipfile.ZipFile(LAB) as z:
             names=z.namelist();self.assertIn('queries.sql',names);self.assertIn('power-bi/BrazilIncome.pbip',names)

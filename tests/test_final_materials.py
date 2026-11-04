@@ -8,13 +8,16 @@ class FinalMaterialsTests(unittest.TestCase):
         self.en=json.loads((ROOT/'content/hiring/resume.json').read_text())
         self.pt=json.loads((ROOT/'content/hiring/resume-pt.json').read_text())
     def test_contact_and_identity_match(self):
-        for k in ('name','email','phone'):self.assertEqual(self.en[k],self.pt[k])
+        for k in ('name','email'):self.assertEqual(self.en[k],self.pt[k])
+        for data in (self.en,self.pt): self.assertNotIn('phone', data)
+        self.assertEqual(self.en['experience'][0]['dates'], 'August 2026 - Present')
+        self.assertEqual(self.pt['experience'][0]['dates'], 'Agosto de 2026 - atual')
     def test_fipe_scope_and_dates(self):
-        self.assertEqual(len(self.en['experience']['bullets']),5)
-        self.assertEqual(len(self.pt['experience']['bullets']),5)
-        self.assertIn('June 2024 - December 2025',self.en['experience']['dates'])
+        self.assertEqual(len(self.en['experience'][1]['bullets']),5)
+        self.assertEqual(len(self.pt['experience'][1]['bullets']),5)
+        self.assertIn('June 2024 - December 2025',self.en['experience'][1]['dates'])
         for term in ('collective bargaining','researchers and managers','traceability'):
-            self.assertIn(term,' '.join(self.en['experience']['bullets']))
+            self.assertIn(term,' '.join(self.en['experience'][1]['bullets']))
     def test_selected_training_not_certifications(self):
         self.assertEqual(len(self.en['training']),3)
         self.assertTrue(any('97 hours' in x for x in self.en['training']))

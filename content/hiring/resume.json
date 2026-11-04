@@ -18,33 +18,45 @@
       "PostgreSQL, SQL Server, MySQL, Azure SQL Database, Git, Docker, automated tests and GitHub Actions"
     ]
   ],
-  "experience": {
-    "organization": "FIPE - Fundação Instituto de Pesquisas Econômicas",
-    "role": "Data Analyst Intern",
-    "dates": "June 2024 - December 2025",
-    "bullets": [
-      "Collected, cleaned and validated economic and collective bargaining data, investigating inconsistencies and consolidating datasets.",
-      "Automated recurring collection and processing with Python, R, Excel and VBA to reduce manual work.",
-      "Built and maintained Power BI, DAX and Excel dashboards and metrics for analysis and reporting.",
-      "Used SQL, relational databases, REST APIs and spreadsheets to prepare information for researchers and managers.",
-      "Documented processing, automation and results to standardize deliverables and preserve traceability."
-    ]
-  },
-  "projects": [
+  "experience": [
     {
-      "name": "DataFlow | Data analytics and quality",
-      "url": "https://mauriciotaguchi.com.br/case-studies/dataflow.html",
-      "repo": "https://github.com/MauricioTaguchi/data-analytics-platform",
-      "text": "Personal platform for data import, validation and transformation with version history, undo, asynchronous processing and tests. Python/FastAPI, React, PostgreSQL, Celery and Redis."
+      "organization": "Self-employed",
+      "role": "Freelance Data Analyst",
+      "dates": "August 2026 - Present",
+      "bullets": [
+        "Offer data preparation, validation, dashboards and workflow automation services using SQL, Python, Power BI and Excel."
+      ]
     },
+    {
+      "organization": "FIPE - Fundação Instituto de Pesquisas Econômicas",
+      "role": "Data Analyst Intern",
+      "dates": "June 2024 - December 2025",
+      "bullets": [
+        "Collected, cleaned and validated economic and collective bargaining data, investigating inconsistencies and consolidating datasets.",
+        "Automated recurring collection and processing with Python, R, Excel and VBA to reduce manual work.",
+        "Built and maintained Power BI, DAX and Excel dashboards and metrics for analysis and reporting.",
+        "Used SQL, relational databases, REST APIs and spreadsheets to prepare information for researchers and managers.",
+        "Documented processing, automation and results to standardize deliverables and preserve traceability."
+      ]
+    }
+  ],
+  "projects": [
     {
       "name": "Brazil Income Analysis | IBGE/SIDRA",
       "url": "https://mauriciotaguchi.com.br/case-studies/brazil-income.html",
       "repo": "https://github.com/MauricioTaguchi/analise-renda-brasil",
-      "text": "Reproducible Python/SQL pipeline covering 20 quarters and all 27 federal units. Produces analytical datasets, an HTML dashboard and an executive summary with quality checks and CI."
+      "text": "Reproducible Python/SQL pipeline covering 20 quarters and all 27 federal units. Produces analytical datasets, an HTML dashboard and an executive summary with quality checks and CI.",
+      "demo": "https://mauriciotaguchi.com.br/demos/income/"
+    },
+    {
+      "name": "DataFlow | Data analytics and quality",
+      "url": "https://mauriciotaguchi.com.br/case-studies/dataflow.html",
+      "repo": "https://github.com/MauricioTaguchi/data-analytics-platform",
+      "text": "Personal platform for data import, validation and transformation with version history, undo, asynchronous processing and tests. Python/FastAPI, React, PostgreSQL, Celery and Redis.",
+      "demo": "https://mauriciotaguchi.com.br/demos/dataflow/"
     }
   ],
-  "education": "B.Sc. in Computer Science - Universidade Paulista (UNIP) | 2022-2026 | Completed in 2026",
+  "education": "B.Sc. in Computer Science | Universidade Paulista (UNIP), São Paulo | Graduated August 2026",
   "languages": "Portuguese: native | English: advanced | Spanish: basic",
   "links": {
     "Portfolio": "https://mauriciotaguchi.com.br/",
@@ -52,7 +64,6 @@
     "LinkedIn": "https://www.linkedin.com/in/mauriciotaguchi/",
     "GitHub": "https://github.com/MauricioTaguchi"
   },
-  "phone": "+55 11 91591-1294",
   "communication": {
     "label": "Technical writing",
     "text": "English tutorials on CSV validation, data revisions and SDK evaluation, with reproducible examples.",

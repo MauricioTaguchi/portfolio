@@ -18,33 +18,45 @@
       "PostgreSQL, SQL Server, MySQL, Azure SQL Database, Git, Docker, testes automatizados e GitHub Actions"
     ]
   ],
-  "experience": {
-    "organization": "FIPE - Fundação Instituto de Pesquisas Econômicas",
-    "role": "Estagiário de Análise de Dados",
-    "dates": "Junho de 2024 - Dezembro de 2025",
-    "bullets": [
-      "Coletei, tratei e validei dados econômicos e de negociações coletivas, investigando inconsistências e consolidando bases.",
-      "Automatizei rotinas de coleta e processamento com Python, R, Excel e VBA para reduzir o trabalho manual.",
-      "Desenvolvi e mantive dashboards e indicadores com Power BI, DAX e Excel para análise e relatórios.",
-      "Utilizei SQL, bancos relacionais, APIs REST e planilhas para preparar informações para pesquisadores e gestores.",
-      "Documentei o processamento, as automações e os resultados para padronizar entregas e preservar a rastreabilidade."
-    ]
-  },
-  "projects": [
+  "experience": [
     {
-      "name": "DataFlow | Análise e qualidade de dados",
-      "url": "https://mauriciotaguchi.com.br/case-studies/dataflow.html",
-      "repo": "https://github.com/MauricioTaguchi/data-analytics-platform",
-      "text": "Plataforma pessoal para importação, validação e transformação de dados, com histórico de versões, desfazer, processamento assíncrono e testes. Python/FastAPI, React, PostgreSQL, Celery e Redis."
+      "organization": "Autônomo",
+      "role": "Analista de Dados Freelancer",
+      "dates": "Agosto de 2026 - atual",
+      "bullets": [
+        "Ofereço serviços de preparação e validação de dados, dashboards e automação de rotinas com SQL, Python, Power BI e Excel."
+      ]
     },
+    {
+      "organization": "FIPE - Fundação Instituto de Pesquisas Econômicas",
+      "role": "Estagiário de Análise de Dados",
+      "dates": "Junho de 2024 - Dezembro de 2025",
+      "bullets": [
+        "Coletei, tratei e validei dados econômicos e de negociações coletivas, investigando inconsistências e consolidando bases.",
+        "Automatizei rotinas de coleta e processamento com Python, R, Excel e VBA para reduzir o trabalho manual.",
+        "Desenvolvi e mantive dashboards e indicadores com Power BI, DAX e Excel para análise e relatórios.",
+        "Utilizei SQL, bancos relacionais, APIs REST e planilhas para preparar informações para pesquisadores e gestores.",
+        "Documentei o processamento, as automações e os resultados para padronizar entregas e preservar a rastreabilidade."
+      ]
+    }
+  ],
+  "projects": [
     {
       "name": "Análise de Renda no Brasil | IBGE/SIDRA",
       "url": "https://mauriciotaguchi.com.br/case-studies/brazil-income.html",
       "repo": "https://github.com/MauricioTaguchi/analise-renda-brasil",
-      "text": "Pipeline reproduzível em Python/SQL com 20 trimestres e as 27 unidades federativas. Gera bases analíticas, dashboard HTML e resumo executivo, com verificações de qualidade e integração contínua."
+      "text": "Pipeline reproduzível em Python/SQL com 20 trimestres e as 27 unidades federativas. Gera bases analíticas, dashboard HTML e resumo executivo, com verificações de qualidade e integração contínua.",
+      "demo": "https://mauriciotaguchi.com.br/demos/income/"
+    },
+    {
+      "name": "DataFlow | Análise e qualidade de dados",
+      "url": "https://mauriciotaguchi.com.br/case-studies/dataflow.html",
+      "repo": "https://github.com/MauricioTaguchi/data-analytics-platform",
+      "text": "Plataforma pessoal para importação, validação e transformação de dados, com histórico de versões, desfazer, processamento assíncrono e testes. Python/FastAPI, React, PostgreSQL, Celery e Redis.",
+      "demo": "https://mauriciotaguchi.com.br/demos/dataflow/"
     }
   ],
-  "education": "Bacharelado em Ciência da Computação - Universidade Paulista (UNIP) | 2022-2026 | Concluído em 2026",
+  "education": "Bacharelado em Ciência da Computação | Universidade Paulista (UNIP), São Paulo | Concluído em agosto de 2026",
   "languages": "Português: nativo | Inglês: avançado | Espanhol: básico",
   "links": {
     "Portfólio": "https://mauriciotaguchi.com.br/",
@@ -52,7 +64,6 @@
     "LinkedIn": "https://www.linkedin.com/in/mauriciotaguchi/",
     "GitHub": "https://github.com/MauricioTaguchi"
   },
-  "phone": "+55 11 91591-1294",
   "communication": {
     "label": "Comunicação técnica",
     "text": "Tutoriais em inglês sobre validação de CSV, revisões de dados e avaliação de SDKs, com exemplos reproduzíveis.",
