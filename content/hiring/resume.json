@@ -32,7 +32,7 @@
       "role": "Data Analyst Intern",
       "dates": "June 2024 - December 2025",
       "bullets": [
-        "Collected, cleaned and validated economic and collective bargaining data, investigating inconsistencies and consolidating datasets.",
+        "Investigated inconsistencies in collective bargaining records, consolidated the dataset, and documented the validation checks. Researchers and managers used the data to analyze trends and prepare reports.",
         "Automated recurring collection and processing with Python, R, Excel and VBA to reduce manual work.",
         "Built and maintained Power BI, DAX and Excel dashboards and metrics for analysis and reporting.",
         "Used SQL, relational databases, REST APIs and spreadsheets to prepare information for researchers and managers.",
@@ -45,7 +45,7 @@
       "name": "Brazil Income Analysis | IBGE/SIDRA",
       "url": "https://mauriciotaguchi.com.br/case-studies/brazil-income.html",
       "repo": "https://github.com/MauricioTaguchi/analise-renda-brasil",
-      "text": "Reproducible Python/SQL pipeline covering 20 quarters and all 27 federal units. Produces analytical datasets, an HTML dashboard and an executive summary with quality checks and CI.",
+      "text": "Built a Python and SQL pipeline and a Power BI report to compare earnings across Brazil’s 27 federal units over 20 quarters. Validated the report’s calculations with 15 DAX checks.",
       "demo": "https://mauriciotaguchi.com.br/demos/income/"
     },
     {

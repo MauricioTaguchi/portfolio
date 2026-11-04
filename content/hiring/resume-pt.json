@@ -32,7 +32,7 @@
       "role": "Estagiário de Análise de Dados",
       "dates": "Junho de 2024 - Dezembro de 2025",
       "bullets": [
-        "Coletei, tratei e validei dados econômicos e de negociações coletivas, investigando inconsistências e consolidando bases.",
+        "Investiguei inconsistências nos registros de negociações coletivas, consolidei a base de dados e documentei as verificações realizadas. Pesquisadores e gestores usaram a base para analisar tendências e preparar relatórios.",
         "Automatizei rotinas de coleta e processamento com Python, R, Excel e VBA para reduzir o trabalho manual.",
         "Desenvolvi e mantive dashboards e indicadores com Power BI, DAX e Excel para análise e relatórios.",
         "Utilizei SQL, bancos relacionais, APIs REST e planilhas para preparar informações para pesquisadores e gestores.",
@@ -45,7 +45,7 @@
       "name": "Análise de Renda no Brasil | IBGE/SIDRA",
       "url": "https://mauriciotaguchi.com.br/case-studies/brazil-income.html",
       "repo": "https://github.com/MauricioTaguchi/analise-renda-brasil",
-      "text": "Pipeline reproduzível em Python/SQL com 20 trimestres e as 27 unidades federativas. Gera bases analíticas, dashboard HTML e resumo executivo, com verificações de qualidade e integração contínua.",
+      "text": "Desenvolvi um pipeline em Python e SQL e um relatório no Power BI para comparar a renda nas 27 unidades federativas do Brasil ao longo de 20 trimestres. Validei os cálculos do relatório com 15 testes DAX.",
       "demo": "https://mauriciotaguchi.com.br/demos/income/"
     },
     {
