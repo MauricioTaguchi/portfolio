@@ -25,7 +25,24 @@ def main():
         if old not in original:raise ValueError('Pinned connection hook changed')
         adapted=original.replace(old,'onConnect={() => setNotice("This public demo uses sample data only. API connections are disabled.")}')
         adapted=adapted.replace('disabled={combinedBusy} onChange={(event) => { const file', 'disabled={true} onChange={(event) => { const file')
+        tour='Use the instant sample or connect the API to persist datasets, jobs, and lineage.'
+        if adapted.count(tour)!=1:raise ValueError('Pinned tour introduction changed')
+        adapted=adapted.replace(tour,'Explore the sample data here. To save datasets, jobs, and lineage, run the full platform.')
+        for before,after in [
+            ('The portfolio sample is ready. Connect the API to enable persistent workflows.','The sample is ready to explore. Changes stay in this tab and reset when you reload.'),
+            ('The API is unavailable. The local demo remains functional.','This demo runs without a backend. Use the full platform for server features.'),
+            ('className={`primary file-button${combinedBusy ? " disabled" : ""}`} aria-disabled={combinedBusy}', 'className="primary file-button disabled" aria-disabled={true} title="File uploads are available in the full platform."'),
+            ('"Upload dataset"','"Upload disabled"'),
+        ]:
+            if adapted.count(before)!=1:raise ValueError('Pinned demo guidance changed: '+before)
+            adapted=adapted.replace(before,after)
         app.write_text(adapted)
+        sidebar=front/'src/components/WorkspaceSidebar.tsx'
+        sidebar_text=sidebar.read_text(encoding='utf-8')
+        if sidebar_text.count('"Connect API"')!=1:raise ValueError('Pinned sidebar connection label changed')
+        sidebar.write_text(sidebar_text.replace('"Connect API"','"About this demo"'),encoding='utf-8')
+        styles=front/'src/styles.css'
+        styles.write_text(styles.read_text(encoding='utf-8')+'\n'+(ROOT/'scripts/dataflow-demo.css').read_text(encoding='utf-8'),encoding='utf-8')
         dashboard=front/'src/components/DashboardWorkspace.tsx'
         component=dashboard.read_text(encoding='utf-8')
         layout='  return <section className="dashboard-layout">'
@@ -53,7 +70,7 @@ def main():
             if file.is_file():notices.append(str(file.relative_to(front/'node_modules'))+'\n'+file.read_text(errors='replace'))
         if (work/'LICENSE').exists():notices.insert(0,'DataFlow project\n'+(work/'LICENSE').read_text())
         (output/'THIRD-PARTY-NOTICES.txt').write_text('\n\n'.join(notices))
-        (output/'source.json').write_text(json.dumps({'repository':'MauricioTaguchi/data-analytics-platform','commit':COMMIT,'mode':'Synthetic sample only; in-memory transformations; API requests and file upload disabled.','adaptations':['Connection button displays a demo notice','File input disabled','API interceptor rejects all requests','connect-src and form-action disabled','Chart counter distinguishes values and rows'],'source_archive_sha256':hashlib.sha256(data).hexdigest()},indent=2))
+        (output/'source.json').write_text(json.dumps({'repository':'MauricioTaguchi/data-analytics-platform','commit':COMMIT,'mode':'Synthetic sample only; in-memory transformations; API requests and file upload disabled.','adaptations':['About this demo button displays a scope notice','File input disabled with a visible unavailable state','API interceptor rejects all requests','connect-src and form-action disabled','Chart counter distinguishes values and rows','Guided tour and status explain the sample-only scope','Supporting labels use readable sizes on small screens'],'source_archive_sha256':hashlib.sha256(data).hexdigest()},indent=2))
         if any(p.suffix.lower() in {'.ttf','.woff','.woff2','.otf'} for p in output.rglob('*')):raise ValueError('Unexpected font files in output')
         print('Built isolated sample-only DataFlow frontend from '+COMMIT)
 if __name__=='__main__':main()

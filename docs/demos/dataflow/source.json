@@ -3,11 +3,13 @@
   "commit": "d61eaf9780238b1bacc741eec4f645e2f53c4360",
   "mode": "Synthetic sample only; in-memory transformations; API requests and file upload disabled.",
   "adaptations": [
-    "Connection button displays a demo notice",
-    "File input disabled",
+    "About this demo button displays a scope notice",
+    "File input disabled with a visible unavailable state",
     "API interceptor rejects all requests",
     "connect-src and form-action disabled",
-    "Chart counter distinguishes values and rows"
+    "Chart counter distinguishes values and rows",
+    "Guided tour and status explain the sample-only scope",
+    "Supporting labels use readable sizes on small screens"
   ],
   "source_archive_sha256": "026825fdfe956e3d06a935c919fa41ce701043745e99a39d52ad7b91ab14abae"
 }

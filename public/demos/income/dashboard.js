@@ -40,7 +40,7 @@
     const current=mean(view);const previous=view.map(prior).filter(Boolean);const full=previous.length===view.length;
     $('income').textContent=money.format(current);$('income-label').textContent=view.length===1?'Selected federal-unit income':'Unweighted mean of displayed federal units';
     $('change').textContent=full?pct((current/mean(previous)-1)*100):'Unavailable';
-    $('comparison').textContent=full?`${previous.length} of ${view.length} exact prior-year matches`:`${previous.length} of ${view.length} prior-year matches; no full comparison`;
+    $('comparison').textContent=view.length===1?(full?'Prior-year match available.':'No prior-year match available.'):(full?`${previous.length} of ${view.length} exact prior-year matches`:`${previous.length} of ${view.length} prior-year matches; no full comparison`);
     $('coverage').textContent=String(view.length);$('period').textContent=view[0].quarter;
     $('scope').textContent=`${view[0].quarter} · ${$('region').value||'All regions'} · ${$('state').selectedOptions[0].textContent}`;
     $('ranking').replaceChildren();$('details').replaceChildren();

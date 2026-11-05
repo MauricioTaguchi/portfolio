@@ -1,0 +1,61 @@
+/* Keep supporting text readable in the embedded portfolio demonstration. */
+.metric-card .metric-label,
+.metric-card > small,
+.breadcrumbs,
+.topbar-tools .tour-trigger,
+.dataset-strip .text-button,
+.status-pill,
+.connected.demo,
+.panel-count,
+.column-heading,
+.column-type,
+.null-value,
+.table-footer,
+.pagination-label,
+.card-eyebrow,
+.score-ring span,
+.quality-metrics p,
+.quality-footnote,
+.processing-badge,
+.processing-heading strong,
+.processing-copy,
+.processing-percent,
+.job-meta,
+.brand-subtitle,
+.nav-group-label,
+.sidebar-footer-heading strong,
+.sidebar-footer-heading p,
+.environment-label,
+.environment-value,
+.report-list span,
+.report-kpis span,
+.job-row span,
+.job-row small,
+.snapshot-list p,
+.snapshot-list small,
+.snapshot-list code,
+.snapshot-list summary,
+.quality-evidence code,
+.quality-evidence summary,
+.quality-evidence li > span,
+.operation-fields pre {
+  font-size: 12px;
+}
+.notice,
+.dataset-heading p,
+.panel-header p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.file-button.disabled {
+  opacity: 1;
+  color: var(--muted);
+  background: var(--surface-raised);
+  border-color: var(--border-strong);
+  cursor: not-allowed;
+}
+@media (max-width: 760px) {
+  .topbar { flex-wrap: wrap; row-gap: 8px; padding-block: 10px; }
+  .topbar-tools { margin-left: auto; }
+  .title-line { flex-wrap: wrap; }
+}

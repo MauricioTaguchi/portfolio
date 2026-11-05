@@ -22,7 +22,7 @@
 .hiring-links a[href^="mailto:"]{margin-inline-start:4px}
 .availability{font-size:12px!important;line-height:1.65;color:#65676b;letter-spacing:.2px;margin:15px 0 0}.project-end{flex-wrap:wrap}.site-header nav{gap:24px}
 @media(max-width:900px){.site-header nav{gap:14px;font-size:12px}.header-cta{gap:12px}}
-@media(max-width:600px){.hiring-links{margin-top:16px;font-size:12px}.availability{font-size:11px!important;max-width:230px}.hero-heading{z-index:5}.mobile-menu nav a{font-size:30px!important;padding:13px 0!important}.mobile-menu nav{margin-top:22px!important}.mobile-menu p{margin-top:22px!important}}
+@media(max-width:600px){.hiring-links{margin-top:16px;font-size:12px}.availability{font-size:12px!important;max-width:230px}.hero-heading{z-index:5}.mobile-menu nav a{font-size:30px!important;padding:13px 0!important}.mobile-menu nav{margin-top:22px!important}.mobile-menu p{margin-top:22px!important}}
 
 /* Keyboard access must remain visible in the light message panel. */
 html{scroll-padding-top:104px}
