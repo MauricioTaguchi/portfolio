@@ -3,14 +3,48 @@ from __future__ import annotations
 import argparse, hashlib, io, json, shutil, subprocess, tempfile, urllib.request, zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-COMMIT='d61eaf9780238b1bacc741eec4f645e2f53c4360'
+COMMIT='e9e17df0924969d0c6f745415a898732910b3858'
+
+def replace_once(source, before, after):
+    if source.count(before) != 1:
+        raise ValueError('Pinned demo boundary changed: ' + before)
+    return source.replace(before, after)
+
+def adapt_app(source):
+    for before, after in [
+        ('onConnect={() => setConnectionOpen(true)}', 'onConnect={() => setNotice("This public demo uses sample data only. API connections are disabled.")}'),
+        ('disabled={combinedBusy} onChange={(event) => { const file', 'disabled={true} onChange={(event) => { const file'),
+        ('Use the instant sample or connect the API to persist datasets, jobs, and lineage.', 'Explore the sample data here. To save datasets, jobs, and lineage, run the full platform.'),
+        ('The portfolio sample is ready. Connect the API to enable persistent workflows.', 'The sample is ready to explore. Changes stay in this tab and reset when you reload.'),
+        ('The API is unavailable. The local demo remains functional.', 'This demo runs without a backend. Use the full platform for server features.'),
+        ('className={`primary file-button${combinedBusy ? " disabled" : ""}`} aria-disabled={combinedBusy}', 'className="primary file-button disabled" aria-disabled={true} title="File uploads are available in the full platform."'),
+        ('"Upload dataset"', '"Upload disabled"'),
+    ]:
+        source = replace_once(source, before, after)
+    return source
+
+def verify_chart_scope(source):
+    if ' chart records loaded' not in source or ' from the local preview' not in source:
+        raise ValueError('Pinned dashboard no longer identifies its preview scope')
+    if 'Remaining data is not plotted.' not in source:
+        raise ValueError('Pinned dashboard no longer identifies truncated results')
+
+def source_archive(checkout=None):
+    if checkout is not None:
+        # Archive the pinned commit, never uncommitted files from a working tree.
+        return subprocess.run(['git', '-C', str(checkout), 'archive', '--format=zip', '--prefix=dataflow/', COMMIT, 'frontend', 'LICENSE'], check=True, capture_output=True).stdout
+    request=urllib.request.Request(f'https://api.github.com/repos/MauricioTaguchi/data-analytics-platform/zipball/{COMMIT}',headers={'User-Agent':'portfolio-demo-build'})
+    with urllib.request.urlopen(request,timeout=60) as response:
+        data=response.read(30_000_001)
+    if len(data)>30_000_000:
+        raise ValueError('Source archive exceeds the size limit')
+    return data
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',type=Path,default=ROOT/'public/demos/dataflow');args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',type=Path,default=ROOT/'public/demos/dataflow');parser.add_argument('--source-checkout',type=Path,help='Read the pinned commit from a local Git checkout instead of downloading it');args=parser.parse_args()
     with tempfile.TemporaryDirectory() as temp:
         work=Path(temp)
-        request=urllib.request.Request(f'https://api.github.com/repos/MauricioTaguchi/data-analytics-platform/zipball/{COMMIT}',headers={'User-Agent':'portfolio-demo-build'})
-        with urllib.request.urlopen(request,timeout=60) as response:data=response.read(30_000_000)
+        data=source_archive(args.source_checkout)
         with zipfile.ZipFile(io.BytesIO(data)) as archive:
             for item in archive.infolist():
                 parts=Path(item.filename).parts[1:]
@@ -20,41 +54,14 @@ def main():
                 if relative.parts[0]=='frontend' or relative==Path('LICENSE'):
                     dest=work/relative;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(archive.read(item))
         front=work/'frontend';app=front/'src/App.tsx'
-        original=app.read_text()
-        old='onConnect={() => setConnectionOpen(true)}'
-        if old not in original:raise ValueError('Pinned connection hook changed')
-        adapted=original.replace(old,'onConnect={() => setNotice("This public demo uses sample data only. API connections are disabled.")}')
-        adapted=adapted.replace('disabled={combinedBusy} onChange={(event) => { const file', 'disabled={true} onChange={(event) => { const file')
-        tour='Use the instant sample or connect the API to persist datasets, jobs, and lineage.'
-        if adapted.count(tour)!=1:raise ValueError('Pinned tour introduction changed')
-        adapted=adapted.replace(tour,'Explore the sample data here. To save datasets, jobs, and lineage, run the full platform.')
-        for before,after in [
-            ('The portfolio sample is ready. Connect the API to enable persistent workflows.','The sample is ready to explore. Changes stay in this tab and reset when you reload.'),
-            ('The API is unavailable. The local demo remains functional.','This demo runs without a backend. Use the full platform for server features.'),
-            ('className={`primary file-button${combinedBusy ? " disabled" : ""}`} aria-disabled={combinedBusy}', 'className="primary file-button disabled" aria-disabled={true} title="File uploads are available in the full platform."'),
-            ('"Upload dataset"','"Upload disabled"'),
-        ]:
-            if adapted.count(before)!=1:raise ValueError('Pinned demo guidance changed: '+before)
-            adapted=adapted.replace(before,after)
-        app.write_text(adapted)
+        app.write_text(adapt_app(app.read_text(encoding='utf-8')),encoding='utf-8')
         sidebar=front/'src/components/WorkspaceSidebar.tsx'
         sidebar_text=sidebar.read_text(encoding='utf-8')
-        if sidebar_text.count('"Connect API"')!=1:raise ValueError('Pinned sidebar connection label changed')
-        sidebar.write_text(sidebar_text.replace('"Connect API"','"About this demo"'),encoding='utf-8')
+        sidebar.write_text(replace_once(sidebar_text,'"Connect API"','"About this demo"'),encoding='utf-8')
         styles=front/'src/styles.css'
         styles.write_text(styles.read_text(encoding='utf-8')+'\n'+(ROOT/'scripts/dataflow-demo.css').read_text(encoding='utf-8'),encoding='utf-8')
         dashboard=front/'src/components/DashboardWorkspace.tsx'
-        component=dashboard.read_text(encoding='utf-8')
-        layout='  return <section className="dashboard-layout">'
-        old_count='{data?.labels.length || data?.rows.length || 0} records visualized'
-        if component.count(layout)!=1 or component.count(old_count)!=1:
-            raise ValueError('Pinned dashboard counter changed')
-        counter='''  const resultCount = chartType === "kpi" ? Math.min(data?.labels.length ?? 0, 1)
-    : chartType === "table" ? (data?.rows.length ?? 0) : (data?.labels.length ?? 0);
-  const resultUnit = chartType === "table" ? "row" : "value";
-
-'''
-        dashboard.write_text(component.replace(layout, counter+layout).replace(old_count,'{resultCount} {resultUnit}{resultCount === 1 ? "" : "s"} shown'),encoding='utf-8')
+        verify_chart_scope(dashboard.read_text(encoding='utf-8'))
         main=front/'src/main.tsx';main.write_text('import "./demo-boundary";\n'+main.read_text())
         (front/'src/demo-boundary.ts').write_text('import { apiClient } from "./api-client";\napiClient.interceptors.request.use(() => { throw new Error("The public demonstration has no API connection. Use a local checkout for server-backed workflows."); });\n')
         pnpm=shutil.which('pnpm') or 'pnpm'
@@ -62,7 +69,8 @@ def main():
         subprocess.run([pnpm,'typecheck'],cwd=front,check=True)
         subprocess.run([pnpm,'exec','vite','build','--base','/demos/dataflow/app/'],cwd=front,check=True)
         output=args.output;output.mkdir(parents=True,exist_ok=True)
-        shutil.copytree(front/'dist',output/'app',dirs_exist_ok=True)
+        if (output/'app').exists():shutil.rmtree(output/'app')
+        shutil.copytree(front/'dist',output/'app')
         # No upload/account endpoint is reachable; the CSP is additional defense.
         p=output/'app/index.html';html=p.read_text();html=html.replace('<head>','<head>\n<meta http-equiv="Content-Security-Policy" content="connect-src \'none\'; form-action \'none\'; object-src \'none\'; base-uri \'self\'">',1);p.write_text(html)
         notices=[]
@@ -70,7 +78,7 @@ def main():
             if file.is_file():notices.append(str(file.relative_to(front/'node_modules'))+'\n'+file.read_text(errors='replace'))
         if (work/'LICENSE').exists():notices.insert(0,'DataFlow project\n'+(work/'LICENSE').read_text())
         (output/'THIRD-PARTY-NOTICES.txt').write_text('\n\n'.join(notices))
-        (output/'source.json').write_text(json.dumps({'repository':'MauricioTaguchi/data-analytics-platform','commit':COMMIT,'mode':'Synthetic sample only; in-memory transformations; API requests and file upload disabled.','adaptations':['About this demo button displays a scope notice','File input disabled with a visible unavailable state','API interceptor rejects all requests','connect-src and form-action disabled','Chart counter distinguishes values and rows','Guided tour and status explain the sample-only scope','Supporting labels use readable sizes on small screens'],'source_archive_sha256':hashlib.sha256(data).hexdigest()},indent=2))
+        (output/'source.json').write_text(json.dumps({'repository':'MauricioTaguchi/data-analytics-platform','commit':COMMIT,'mode':'Synthetic sample only; in-memory transformations; API requests and file upload disabled.','adaptations':['About this demo button displays a scope notice','File input disabled with a visible unavailable state','API interceptor rejects all requests','connect-src and form-action disabled','Upstream chart limits, totals and preview scope remain unchanged','Guided tour and status explain the sample-only scope','Supporting labels use readable sizes on small screens'],'source_archive_sha256':hashlib.sha256(data).hexdigest()},indent=2))
         if any(p.suffix.lower() in {'.ttf','.woff','.woff2','.otf'} for p in output.rglob('*')):raise ValueError('Unexpected font files in output')
         print('Built isolated sample-only DataFlow frontend from '+COMMIT)
 if __name__=='__main__':main()
