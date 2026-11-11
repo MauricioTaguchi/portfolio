@@ -15,11 +15,11 @@ SPEC = importlib.util.spec_from_file_location('dataflow_demo', ROOT/'scripts/bui
 demo = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(demo)
 
-APP = '''onConnect={() => setConnectionOpen(true)}
+APP = '''onConnect={() => openSignIn()}
 disabled={combinedBusy} onChange={(event) => { const file
-Use the instant sample or connect the API to persist datasets, jobs, and lineage.
-The portfolio sample is ready. Connect the API to enable persistent workflows.
-The API is unavailable. The local demo remains functional.
+Explore the sample, or sign in to save your datasets and return to your work later.
+Explore the sample, or sign in to save and reopen your own work.
+The service is unavailable right now. You can keep exploring the sample.
 className={`primary file-button${combinedBusy ? " disabled" : ""}`} aria-disabled={combinedBusy}
 "Upload dataset"
 "Export preview CSV (up to 100 rows)"
@@ -37,9 +37,9 @@ class DataFlowDemoTests(unittest.TestCase):
     def test_public_boundary_disables_uploads_and_connections(self):
         adapted = demo.adapt_app(APP)
         self.assertIn('disabled={true} onChange=', adapted)
-        self.assertIn('API connections are disabled.', adapted)
+        self.assertIn('Accounts and API connections are unavailable here.', adapted)
         self.assertIn('aria-disabled={true}', adapted)
-        self.assertNotIn('setConnectionOpen(true)', adapted)
+        self.assertNotIn('onConnect={() => openSignIn()}', adapted)
         self.assertIn('Export preview CSV (up to 100 rows)', adapted)
         self.assertIn('reset when you reload', adapted)
 
@@ -51,12 +51,24 @@ class DataFlowDemoTests(unittest.TestCase):
 
     def test_changed_connection_hook_fails_closed(self):
         with self.assertRaisesRegex(ValueError, 'boundary changed'):
-            demo.adapt_app(APP.replace('onConnect={() => setConnectionOpen(true)}', 'changed'))
+            demo.adapt_app(APP.replace('onConnect={() => openSignIn()}', 'changed'))
+
+    def test_reset_fragments_are_consumed_but_do_not_open_account_actions(self):
+        source = '''const passwordResetToken = consumePasswordResetToken(window.location, window.history);
+<App initialResetToken={passwordResetToken} />'''
+        adapted = demo.adapt_main(source)
+        self.assertIn('consumePasswordResetToken(window.location, window.history);', adapted)
+        self.assertIn('<App />', adapted)
+        self.assertNotIn('initialResetToken=', adapted)
+        self.assertNotIn('const passwordResetToken', adapted)
+        self.assertTrue(adapted.startswith('import "./demo-boundary";'))
+        with self.assertRaisesRegex(ValueError, 'boundary changed'):
+            demo.adapt_main(source.replace('initialResetToken=', 'changed='))
 
     def test_chart_scope_and_truncation_notices_are_required(self):
-        source = ' chart records loaded from the local preview. Remaining data is not plotted.'
+        source = ' chart records loaded from the local preview. Remaining data is not plotted. Pie charts support sum or count only. Metric definition'
         demo.verify_chart_scope(source)
-        for phrase in (' chart records loaded', ' from the local preview', 'Remaining data is not plotted.'):
+        for phrase in (' chart records loaded', ' from the local preview', 'Remaining data is not plotted.', 'Pie charts support sum or count only.', 'Metric definition'):
             with self.subTest(phrase=phrase), self.assertRaises(ValueError):
                 demo.verify_chart_scope(source.replace(phrase, ''))
 

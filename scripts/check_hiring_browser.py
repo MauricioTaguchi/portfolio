@@ -20,9 +20,11 @@ def check(base,evidence):
         try:
             for width,height in [(1440,1000),(390,844)]:
                 context=browser.new_context(viewport={'width':width,'height':height},reduced_motion='reduce',locale='en-US',accept_downloads=True)
-                page=context.new_page();page.set_default_timeout(20000);errors=[];mutations=[]
+                page=context.new_page();page.set_default_timeout(20000);errors=[];mutations=[];api_requests=[]
                 page.on('pageerror',lambda e:errors.append(str(e)))
                 def protect(route):
+                    if urlsplit(route.request.url).path.startswith('/api/'):
+                        api_requests.append(route.request.url)
                     if route.request.method not in ('GET','HEAD','OPTIONS'):
                         mutations.append(route.request.method+' '+route.request.url);route.abort()
                     else:route.continue_()
@@ -81,6 +83,10 @@ def check(base,evidence):
                     expect(frame.get_by_label('Upload dataset file',exact=True)).to_be_disabled()
                     menu=frame.get_by_role('button',name='Open menu',exact=True)
                     if menu.is_visible():menu.click()
+                    frame.get_by_role('button',name='About this demo',exact=True).click()
+                    expect(frame.get_by_role('status')).to_contain_text('Accounts and API connections are unavailable here.')
+                    expect(frame.get_by_role('dialog',name='Sign in to DataFlow',exact=True)).to_have_count(0)
+                    if menu.is_visible():menu.click()
                     frame.get_by_role('navigation',name='Workspace',exact=True).get_by_role('button',name='Transformations',exact=True).click()
                     frame.get_by_role('button',name='Preview impact').click();expect(frame.locator('.comparison')).to_contain_text('5 rows')
                     frame.get_by_role('button',name='Apply transformation').click();expect(frame.get_by_role('status')).to_contain_text('The transformation was applied to the local demo.');expect(frame.locator('.footer-summary strong')).to_contain_text('5 preview rows')
@@ -104,17 +110,29 @@ def check(base,evidence):
                     expect(frame.locator('.line-chart circle')).to_have_count(5)
                     positions=frame.locator('.line-chart circle').evaluate_all('(points) => points.map(point => Number(point.getAttribute("cx")))')
                     assert positions==[30,165,300,570,570],positions
-                    expect(frame.locator('.chart-notice')).to_contain_text('1 rows without a finite numeric X/Y pair were excluded.')
+                    expect(frame.locator('.chart-notice').filter(has_text='without a finite numeric X/Y pair')).to_contain_text('1 rows without a finite numeric X/Y pair were excluded.')
+                    expect(frame.locator('[aria-label="Metric definition"]')).to_contain_text('5 usable X/Y pairs')
                     expect(frame.locator('.chart-canvas .panel-header p')).to_contain_text('from the local preview')
+                    frame.get_by_label('Chart type',exact=True).select_option('bar')
+                    frame.get_by_label('Aggregation',exact=True).select_option('mean')
                     frame.get_by_label('Chart type',exact=True).select_option('pie')
+                    expect(frame.get_by_role('button',name='Build chart',exact=True)).to_be_disabled()
+                    expect(frame.get_by_label('Aggregation',exact=True).get_by_role('option',name='mean',exact=True)).to_be_disabled()
+                    frame.get_by_label('Aggregation',exact=True).select_option('sum')
                     frame.get_by_label('Dimension',exact=True).select_option('category')
                     frame.get_by_role('button',name='Build chart',exact=True).click()
                     expect(frame.locator('.pie-chart span')).to_have_text('9,495.9')
+                    expect(frame.locator('[aria-label="Metric definition"]')).to_contain_text('share of the sum')
                     page.screenshot(path=str(evidence/f'{width}-dataflow.png'))
-                    assert not errors,errors;assert not mutations,mutations
-                    records.append({'viewport':f'{width}x{height}','passed':['resume download bytes','email target','case study navigation','English pages','income scope and reset','exact prior-year absence','filtered CSV export','SQL archive bytes','DataFlow preview, apply and undo','sample CSV export','numeric scatter pairs and omitted row notice','complete pie total','disabled real-file input'],'runtime_errors':errors,'outbound_mutations':mutations})
+                    page.goto(base+'demos/dataflow/app/#reset_token=synthetic-demo-boundary-check',wait_until='networkidle')
+                    assert 'reset_token' not in page.url
+                    expect(page.get_by_role('button',name='Skip tour',exact=True)).to_be_visible()
+                    expect(page.get_by_role('dialog',name='Choose a new password',exact=True)).to_have_count(0)
+                    expect(page.locator('input[type="password"]')).to_have_count(0)
+                    assert not errors,errors;assert not mutations,mutations;assert not api_requests,api_requests
+                    records.append({'viewport':f'{width}x{height}','passed':['resume download bytes','email target','case study navigation','English pages','income scope and reset','exact prior-year absence','filtered CSV export','SQL archive bytes','DataFlow preview, apply and undo','sample CSV export','numeric scatter pairs and omitted row notice','additive pie restriction and complete total','visible metric definition','disabled real-file input','account actions unavailable','reset fragment removed without account form'],'runtime_errors':errors,'outbound_mutations':mutations,'api_requests':api_requests})
                 except Exception as error:
-                    (evidence/f'{width}-failure.json').write_text(json.dumps({'error':str(error),'runtime_errors':errors,'outbound_mutations':mutations},indent=2))
+                    (evidence/f'{width}-failure.json').write_text(json.dumps({'error':str(error),'runtime_errors':errors,'outbound_mutations':mutations,'api_requests':api_requests},indent=2))
                     page.screenshot(path=str(evidence/f'{width}-failure.png'),full_page=True);raise
                 finally:context.close()
         finally:browser.close()
