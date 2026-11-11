@@ -113,6 +113,14 @@ def check(base,evidence):
                     expect(frame.locator('.chart-notice').filter(has_text='without a finite numeric X/Y pair')).to_contain_text('1 rows without a finite numeric X/Y pair were excluded.')
                     expect(frame.locator('[aria-label="Metric definition"]')).to_contain_text('5 usable X/Y pairs')
                     expect(frame.locator('.chart-canvas .panel-header p')).to_contain_text('from the local preview')
+                    values=frame.locator('.chart-values');summary=values.locator('summary');summary.focus();page.keyboard.press('Enter')
+                    expect(values).to_have_attribute('open','')
+                    table=values.get_by_role('table');expect(table).to_be_visible()
+                    expect(table.get_by_role('columnheader')).to_have_text(['X: order_id','Y: total'])
+                    expect(table.locator('tbody tr')).to_have_count(5)
+                    expect(table.get_by_role('row',name='100005 1299',exact=True)).to_have_count(2)
+                    expect(table.get_by_role('row',name='100001 5299',exact=True)).to_be_visible()
+                    summary.focus();page.keyboard.press('Space');expect(values).not_to_have_attribute('open','');expect(summary).to_be_focused()
                     frame.get_by_label('Chart type',exact=True).select_option('bar')
                     frame.get_by_label('Aggregation',exact=True).select_option('mean')
                     frame.get_by_label('Chart type',exact=True).select_option('pie')
@@ -123,6 +131,12 @@ def check(base,evidence):
                     frame.get_by_role('button',name='Build chart',exact=True).click()
                     expect(frame.locator('.pie-chart span')).to_have_text('9,495.9')
                     expect(frame.locator('[aria-label="Metric definition"]')).to_contain_text('share of the sum')
+                    summary.focus();page.keyboard.press('Enter');expect(values).to_have_attribute('open','')
+                    expect(table.get_by_role('columnheader')).to_have_text(['category','sum of total','Share of total'])
+                    expect(table.get_by_role('row',name='Total 9495.9 100%',exact=True)).to_be_visible()
+                    expect(table.get_by_role('cell',name='5998',exact=True)).to_be_visible()
+                    expect(table.get_by_role('cell',name='3497.9',exact=True)).to_be_visible()
+                    assert table.evaluate('(element) => element.scrollWidth <= element.clientWidth + 1')
                     page.screenshot(path=str(evidence/f'{width}-dataflow.png'))
                     page.goto(base+'demos/dataflow/app/#reset_token=synthetic-demo-boundary-check',wait_until='networkidle')
                     assert 'reset_token' not in page.url
@@ -130,7 +144,7 @@ def check(base,evidence):
                     expect(page.get_by_role('dialog',name='Choose a new password',exact=True)).to_have_count(0)
                     expect(page.locator('input[type="password"]')).to_have_count(0)
                     assert not errors,errors;assert not mutations,mutations;assert not api_requests,api_requests
-                    records.append({'viewport':f'{width}x{height}','passed':['resume download bytes','email target','case study navigation','English pages','income scope and reset','exact prior-year absence','filtered CSV export','SQL archive bytes','DataFlow preview, apply and undo','sample CSV export','numeric scatter pairs and omitted row notice','additive pie restriction and complete total','visible metric definition','disabled real-file input','account actions unavailable','reset fragment removed without account form'],'runtime_errors':errors,'outbound_mutations':mutations,'api_requests':api_requests})
+                    records.append({'viewport':f'{width}x{height}','passed':['resume download bytes','email target','case study navigation','English pages','income scope and reset','exact prior-year absence','filtered CSV export','SQL archive bytes','DataFlow preview, apply and undo','sample CSV export','numeric scatter pairs and omitted row notice','additive pie restriction and complete total','visible metric definition','keyboard-accessible exact chart tables','disabled real-file input','account actions unavailable','reset fragment removed without account form'],'runtime_errors':errors,'outbound_mutations':mutations,'api_requests':api_requests})
                 except Exception as error:
                     (evidence/f'{width}-failure.json').write_text(json.dumps({'error':str(error),'runtime_errors':errors,'outbound_mutations':mutations,'api_requests':api_requests},indent=2))
                     page.screenshot(path=str(evidence/f'{width}-failure.png'),full_page=True);raise

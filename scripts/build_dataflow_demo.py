@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse, hashlib, io, json, shutil, subprocess, tempfile, urllib.request, zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-COMMIT='5c06cf8fe97eb0b1158e5d347f92dd845f7bc3b8'
+COMMIT='c966f233b1e7d7c9757e62610c72f1c5031a85f6'
 
 def replace_once(source, before, after):
     if source.count(before) != 1:
@@ -37,6 +37,8 @@ def verify_chart_scope(source):
         raise ValueError('Pinned dashboard no longer identifies truncated results')
     if 'Pie charts support sum or count only.' not in source or 'Metric definition' not in source:
         raise ValueError('Pinned dashboard no longer explains additive metric semantics')
+    if 'View chart values' not in source or 'ChartValuesTable' not in source or '<caption' not in source:
+        raise ValueError('Pinned dashboard no longer exposes semantic chart values')
 
 def source_archive(checkout=None):
     if checkout is not None:
@@ -87,7 +89,7 @@ def main():
             if file.is_file():notices.append(str(file.relative_to(front/'node_modules'))+'\n'+file.read_text(errors='replace'))
         if (work/'LICENSE').exists():notices.insert(0,'DataFlow project\n'+(work/'LICENSE').read_text())
         (output/'THIRD-PARTY-NOTICES.txt').write_text('\n\n'.join(notices))
-        (output/'source.json').write_text(json.dumps({'repository':'MauricioTaguchi/data-analytics-platform','commit':COMMIT,'mode':'Synthetic sample only; in-memory transformations; account actions, API requests and file upload disabled.','adaptations':['About this demo button displays a scope notice','File input disabled with a visible unavailable state','Password reset fragments are removed without opening account actions','API interceptor rejects all requests','connect-src and form-action disabled','Upstream metric definitions, chart limits, totals and preview scope remain unchanged','Guided tour and status explain the sample-only scope','Supporting labels use readable sizes on small screens'],'source_archive_sha256':hashlib.sha256(data).hexdigest()},indent=2))
+        (output/'source.json').write_text(json.dumps({'repository':'MauricioTaguchi/data-analytics-platform','commit':COMMIT,'mode':'Synthetic sample only; in-memory transformations; account actions, API requests and file upload disabled.','adaptations':['About this demo button displays a scope notice','File input disabled with a visible unavailable state','Password reset fragments are removed without opening account actions','API interceptor rejects all requests','connect-src and form-action disabled','Upstream metric definitions, chart limits, totals and preview scope remain unchanged','Expandable tables retain the actual displayed chart values','Guided tour and status explain the sample-only scope','Supporting labels use readable sizes on small screens'],'source_archive_sha256':hashlib.sha256(data).hexdigest()},indent=2))
         if any(p.suffix.lower() in {'.ttf','.woff','.woff2','.otf'} for p in output.rglob('*')):raise ValueError('Unexpected font files in output')
         print('Built isolated sample-only DataFlow frontend from '+COMMIT)
 if __name__=='__main__':main()

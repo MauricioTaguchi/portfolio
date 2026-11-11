@@ -1,6 +1,6 @@
 {
   "repository": "MauricioTaguchi/data-analytics-platform",
-  "commit": "5c06cf8fe97eb0b1158e5d347f92dd845f7bc3b8",
+  "commit": "c966f233b1e7d7c9757e62610c72f1c5031a85f6",
   "mode": "Synthetic sample only; in-memory transformations; account actions, API requests and file upload disabled.",
   "adaptations": [
     "About this demo button displays a scope notice",
@@ -9,8 +9,9 @@
     "API interceptor rejects all requests",
     "connect-src and form-action disabled",
     "Upstream metric definitions, chart limits, totals and preview scope remain unchanged",
+    "Expandable tables retain the actual displayed chart values",
     "Guided tour and status explain the sample-only scope",
     "Supporting labels use readable sizes on small screens"
   ],
-  "source_archive_sha256": "42490cb9330734270c8a330303a35c17cf242b6c657936fb7df599cf0fc2b889"
+  "source_archive_sha256": "c50f2552f23525e6cc5d716e236e6a52409adad3034418c8f57954d2a52f4119"
 }
