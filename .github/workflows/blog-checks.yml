@@ -9,7 +9,7 @@ permissions:
   contents: read
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 8
     strategy:
       fail-fast: false
@@ -35,7 +35,7 @@ jobs:
       - name: Reproduce both examples and check input preservation
         run: python public/blog/exemplos/run_examples.py
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
       PYTHONDONTWRITEBYTECODE: '1'
@@ -80,7 +80,7 @@ jobs:
           retention-days: 7
           if-no-files-found: warn
   browser:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
       PYTHONDONTWRITEBYTECODE: '1'
