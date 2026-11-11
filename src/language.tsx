@@ -14,6 +14,11 @@ function initialLanguage(): Language {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>(initialLanguage);
+  useEffect(() => {
+    const syncHistory = () => setLanguage(initialLanguage());
+    window.addEventListener('popstate', syncHistory);
+    return () => window.removeEventListener('popstate', syncHistory);
+  }, []);
   function changeLanguage(next: Language) {
     setLanguage(next);
     const url = new URL(window.location.href);

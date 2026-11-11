@@ -166,6 +166,18 @@ def exercise(base: str, evidence: Path) -> dict:
                         page.get_by_role('navigation', name='Menu móvel', exact=True).get_by_role('link', name='Projetos').click()
                         expect(page.get_by_role('dialog')).to_have_count(0)
                         require(urlsplit(page.url).fragment == 'projetos', 'Portuguese mobile menu missed the section')
+                    page.goto(base + '?lang=en', wait_until='networkidle')
+                    if width < 600:
+                        page.get_by_role('button', name='Open menu', exact=True).click()
+                        page.get_by_role('navigation', name='Mobile menu', exact=True).get_by_role('link', name='Projects').click()
+                    else:
+                        page.get_by_role('navigation', name='Main navigation', exact=True).get_by_role('link', name='Projects', exact=True).click()
+                    page.get_by_role('button', name='Português do Brasil', exact=True).click()
+                    page.go_back()
+                    expect(page.locator('html')).to_have_attribute('lang', 'en')
+                    require(parse_qs(urlsplit(page.url).query).get('lang') == ['en'], 'Back did not restore the English URL')
+                    page.go_forward()
+                    expect(page.locator('html')).to_have_attribute('lang', 'pt-BR')
                     page.get_by_role('button', name='English', exact=True).click()
                     expect(page.locator('html')).to_have_attribute('lang', 'en')
                     flows.append('bilingual homepage, persistent language, preserved form/anchors, Portuguese mobile menu and exact mailto draft')
