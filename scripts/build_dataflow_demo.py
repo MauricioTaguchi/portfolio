@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse, hashlib, io, json, shutil, subprocess, tempfile, urllib.request, zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-COMMIT='e9e17df0924969d0c6f745415a898732910b3858'
+COMMIT='5c06cf8fe97eb0b1158e5d347f92dd845f7bc3b8'
 
 def replace_once(source, before, after):
     if source.count(before) != 1:
@@ -12,22 +12,31 @@ def replace_once(source, before, after):
 
 def adapt_app(source):
     for before, after in [
-        ('onConnect={() => setConnectionOpen(true)}', 'onConnect={() => setNotice("This public demo uses sample data only. API connections are disabled.")}'),
+        ('onConnect={() => openSignIn()}', 'onConnect={() => setNotice("This public demo uses sample data only. Accounts and API connections are unavailable here.")}'),
         ('disabled={combinedBusy} onChange={(event) => { const file', 'disabled={true} onChange={(event) => { const file'),
-        ('Use the instant sample or connect the API to persist datasets, jobs, and lineage.', 'Explore the sample data here. To save datasets, jobs, and lineage, run the full platform.'),
-        ('The portfolio sample is ready. Connect the API to enable persistent workflows.', 'The sample is ready to explore. Changes stay in this tab and reset when you reload.'),
-        ('The API is unavailable. The local demo remains functional.', 'This demo runs without a backend. Use the full platform for server features.'),
+        ('Explore the sample, or sign in to save your datasets and return to your work later.', 'Explore the sample data here. To save datasets, jobs, and lineage, run the full platform.'),
+        ('Explore the sample, or sign in to save and reopen your own work.', 'The sample is ready to explore. Changes stay in this tab and reset when you reload.'),
+        ('The service is unavailable right now. You can keep exploring the sample.', 'This demo runs without a backend. Use the full platform for server features.'),
         ('className={`primary file-button${combinedBusy ? " disabled" : ""}`} aria-disabled={combinedBusy}', 'className="primary file-button disabled" aria-disabled={true} title="File uploads are available in the full platform."'),
         ('"Upload dataset"', '"Upload disabled"'),
     ]:
         source = replace_once(source, before, after)
     return source
 
+def adapt_main(source):
+    source = replace_once(source,
+        'const passwordResetToken = consumePasswordResetToken(window.location, window.history);',
+        'consumePasswordResetToken(window.location, window.history);')
+    source = replace_once(source, '<App initialResetToken={passwordResetToken} />', '<App />')
+    return 'import "./demo-boundary";\n' + source
+
 def verify_chart_scope(source):
     if ' chart records loaded' not in source or ' from the local preview' not in source:
         raise ValueError('Pinned dashboard no longer identifies its preview scope')
     if 'Remaining data is not plotted.' not in source:
         raise ValueError('Pinned dashboard no longer identifies truncated results')
+    if 'Pie charts support sum or count only.' not in source or 'Metric definition' not in source:
+        raise ValueError('Pinned dashboard no longer explains additive metric semantics')
 
 def source_archive(checkout=None):
     if checkout is not None:
@@ -57,12 +66,12 @@ def main():
         app.write_text(adapt_app(app.read_text(encoding='utf-8')),encoding='utf-8')
         sidebar=front/'src/components/WorkspaceSidebar.tsx'
         sidebar_text=sidebar.read_text(encoding='utf-8')
-        sidebar.write_text(replace_once(sidebar_text,'"Connect API"','"About this demo"'),encoding='utf-8')
+        sidebar.write_text(replace_once(sidebar_text,'"Sign in"','"About this demo"'),encoding='utf-8')
         styles=front/'src/styles.css'
         styles.write_text(styles.read_text(encoding='utf-8')+'\n'+(ROOT/'scripts/dataflow-demo.css').read_text(encoding='utf-8'),encoding='utf-8')
         dashboard=front/'src/components/DashboardWorkspace.tsx'
         verify_chart_scope(dashboard.read_text(encoding='utf-8'))
-        main=front/'src/main.tsx';main.write_text('import "./demo-boundary";\n'+main.read_text())
+        main=front/'src/main.tsx';main.write_text(adapt_main(main.read_text(encoding='utf-8')),encoding='utf-8')
         (front/'src/demo-boundary.ts').write_text('import { apiClient } from "./api-client";\napiClient.interceptors.request.use(() => { throw new Error("The public demonstration has no API connection. Use a local checkout for server-backed workflows."); });\n')
         pnpm=shutil.which('pnpm') or 'pnpm'
         subprocess.run([pnpm,'install','--frozen-lockfile'],cwd=front,check=True)
@@ -78,7 +87,7 @@ def main():
             if file.is_file():notices.append(str(file.relative_to(front/'node_modules'))+'\n'+file.read_text(errors='replace'))
         if (work/'LICENSE').exists():notices.insert(0,'DataFlow project\n'+(work/'LICENSE').read_text())
         (output/'THIRD-PARTY-NOTICES.txt').write_text('\n\n'.join(notices))
-        (output/'source.json').write_text(json.dumps({'repository':'MauricioTaguchi/data-analytics-platform','commit':COMMIT,'mode':'Synthetic sample only; in-memory transformations; API requests and file upload disabled.','adaptations':['About this demo button displays a scope notice','File input disabled with a visible unavailable state','API interceptor rejects all requests','connect-src and form-action disabled','Upstream chart limits, totals and preview scope remain unchanged','Guided tour and status explain the sample-only scope','Supporting labels use readable sizes on small screens'],'source_archive_sha256':hashlib.sha256(data).hexdigest()},indent=2))
+        (output/'source.json').write_text(json.dumps({'repository':'MauricioTaguchi/data-analytics-platform','commit':COMMIT,'mode':'Synthetic sample only; in-memory transformations; account actions, API requests and file upload disabled.','adaptations':['About this demo button displays a scope notice','File input disabled with a visible unavailable state','Password reset fragments are removed without opening account actions','API interceptor rejects all requests','connect-src and form-action disabled','Upstream metric definitions, chart limits, totals and preview scope remain unchanged','Guided tour and status explain the sample-only scope','Supporting labels use readable sizes on small screens'],'source_archive_sha256':hashlib.sha256(data).hexdigest()},indent=2))
         if any(p.suffix.lower() in {'.ttf','.woff','.woff2','.otf'} for p in output.rglob('*')):raise ValueError('Unexpected font files in output')
         print('Built isolated sample-only DataFlow frontend from '+COMMIT)
 if __name__=='__main__':main()
