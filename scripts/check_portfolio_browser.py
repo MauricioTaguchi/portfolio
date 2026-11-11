@@ -8,7 +8,7 @@ import json
 import os
 from pathlib import Path
 from threading import Thread
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 from playwright.sync_api import expect, sync_playwright
 
@@ -137,6 +137,50 @@ def exercise(base: str, evidence: Path) -> dict:
                     page.locator('.prepared-message').scroll_into_view_if_needed()
                     page.screenshot(path=str(evidence / f'{width}-local-message.png'))
                     flows.append('form: required fields, selection, local generation, clipboard, regeneration')
+
+                    draft = urlsplit(page.get_by_role('link', name='Open email draft', exact=True).get_attribute('href'))
+                    require(draft.scheme == 'mailto' and draft.path == 'mauricioryotoitataguchi@gmail.com', 'Wrong email draft recipient')
+                    require(parse_qs(draft.query)['body'] == [prepared.input_value()], 'Email draft lost prepared text')
+                    fragment = urlsplit(page.url).fragment
+                    page.get_by_role('button', name='Português do Brasil', exact=True).click()
+                    expect(page.locator('html')).to_have_attribute('lang', 'pt-BR')
+                    require(parse_qs(urlsplit(page.url).query).get('lang') == ['pt'], 'Portuguese choice missing from URL')
+                    require(urlsplit(page.url).fragment == fragment, 'Language choice lost the current anchor')
+                    translated = page.get_by_role('textbox', name='Mensagem preparada', exact=True)
+                    require('Gostaria de conversar sobre automação.' in translated.input_value(), 'Selected topic did not translate')
+                    require('Updated synthetic message' in translated.input_value(), 'Language choice lost typed message')
+                    expect(page.get_by_role('button', name='Copiar mensagem', exact=True)).to_be_visible()
+                    draft = urlsplit(page.get_by_role('link', name='Abrir rascunho de e-mail', exact=True).get_attribute('href'))
+                    require(parse_qs(draft.query)['body'] == [translated.input_value()], 'Portuguese email draft lost text')
+                    page.goto(base, wait_until='networkidle')
+                    expect(page.locator('html')).to_have_attribute('lang', 'pt-BR')
+                    expect(page.locator('.hero h1')).to_have_text('Análisede dados& BI.')
+                    expect(page.get_by_text('Disponível para projetos freelance remunerados', exact=True)).to_be_in_viewport()
+                    expect(page.get_by_role('link', name='Converse sobre seu projeto', exact=True)).to_be_in_viewport()
+                    require(page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'), 'Portuguese horizontal overflow')
+                    page.screenshot(path=str(evidence / f'{width}-home-pt.png'))
+                    page.reload(wait_until='networkidle')
+                    expect(page.locator('html')).to_have_attribute('lang', 'pt-BR')
+                    if width < 600:
+                        page.get_by_role('button', name='Abrir menu', exact=True).click()
+                        page.get_by_role('navigation', name='Menu móvel', exact=True).get_by_role('link', name='Projetos').click()
+                        expect(page.get_by_role('dialog')).to_have_count(0)
+                        require(urlsplit(page.url).fragment == 'projetos', 'Portuguese mobile menu missed the section')
+                    page.goto(base + '?lang=en', wait_until='networkidle')
+                    if width < 600:
+                        page.get_by_role('button', name='Open menu', exact=True).click()
+                        page.get_by_role('navigation', name='Mobile menu', exact=True).get_by_role('link', name='Projects').click()
+                    else:
+                        page.get_by_role('navigation', name='Main navigation', exact=True).get_by_role('link', name='Projects', exact=True).click()
+                    page.get_by_role('button', name='Português do Brasil', exact=True).click()
+                    page.go_back()
+                    expect(page.locator('html')).to_have_attribute('lang', 'en')
+                    require(parse_qs(urlsplit(page.url).query).get('lang') == ['en'], 'Back did not restore the English URL')
+                    page.go_forward()
+                    expect(page.locator('html')).to_have_attribute('lang', 'pt-BR')
+                    page.get_by_role('button', name='English', exact=True).click()
+                    expect(page.locator('html')).to_have_attribute('lang', 'en')
+                    flows.append('bilingual homepage, persistent language, preserved form/anchors, Portuguese mobile menu and exact mailto draft')
 
                     page.get_by_role('link', name='Explore the blog', exact=True).click()
                     require(urlsplit(page.url).path.rstrip('/').endswith('/blog'), 'Homepage blog link failed')
