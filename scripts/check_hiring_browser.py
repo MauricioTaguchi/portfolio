@@ -85,9 +85,34 @@ def check(base,evidence):
                     frame.get_by_role('button',name='Preview impact').click();expect(frame.locator('.comparison')).to_contain_text('5 rows')
                     frame.get_by_role('button',name='Apply transformation').click();expect(frame.get_by_role('status')).to_contain_text('The transformation was applied to the local demo.');expect(frame.locator('.footer-summary strong')).to_contain_text('5 preview rows')
                     frame.get_by_role('button',name='Undo latest transformation').click();expect(frame.get_by_role('status')).to_contain_text('The latest completed transformation was reversed.');expect(frame.locator('.footer-summary strong')).to_contain_text('6 preview rows')
+                    with page.expect_download() as download:
+                        frame.get_by_role('button',name='Export preview CSV (up to 100 rows)',exact=True).click()
+                    with tempfile.TemporaryDirectory() as temp:
+                        target=Path(temp)/'dataflow-preview.csv';download.value.save_as(target)
+                        with target.open(encoding='utf-8',newline='') as exported:
+                            sample=list(csv.DictReader(exported,strict=True))
+                        assert len(sample)==6 and sample[0]['customer']=='Ana Silva'
+                        assert sample[3]['total']=='' and sample[4]==sample[5]
+                    if menu.is_visible():menu.click()
+                    frame.get_by_role('navigation',name='Workspace',exact=True).get_by_role('button',name='Dashboards',exact=True).click()
+                    frame.get_by_label('Chart type',exact=True).select_option('scatter')
+                    frame.get_by_label('X value',exact=True).select_option('order_id')
+                    frame.get_by_label('Y value',exact=True).select_option('total')
+                    expect(frame.get_by_label('Aggregation',exact=True)).to_be_disabled()
+                    frame.get_by_role('button',name='Build chart',exact=True).click()
+                    expect(frame.get_by_role('img',name='Generated scatter chart',exact=True)).to_be_visible()
+                    expect(frame.locator('.line-chart circle')).to_have_count(5)
+                    positions=frame.locator('.line-chart circle').evaluate_all('(points) => points.map(point => Number(point.getAttribute("cx")))')
+                    assert positions==[30,165,300,570,570],positions
+                    expect(frame.locator('.chart-notice')).to_contain_text('1 rows without a finite numeric X/Y pair were excluded.')
+                    expect(frame.locator('.chart-canvas .panel-header p')).to_contain_text('from the local preview')
+                    frame.get_by_label('Chart type',exact=True).select_option('pie')
+                    frame.get_by_label('Dimension',exact=True).select_option('category')
+                    frame.get_by_role('button',name='Build chart',exact=True).click()
+                    expect(frame.locator('.pie-chart span')).to_have_text('9,495.9')
                     page.screenshot(path=str(evidence/f'{width}-dataflow.png'))
                     assert not errors,errors;assert not mutations,mutations
-                    records.append({'viewport':f'{width}x{height}','passed':['resume download bytes','email target','case study navigation','English pages','income scope and reset','exact prior-year absence','filtered CSV export','SQL archive bytes','DataFlow preview, apply and undo','disabled real-file input'],'runtime_errors':errors,'outbound_mutations':mutations})
+                    records.append({'viewport':f'{width}x{height}','passed':['resume download bytes','email target','case study navigation','English pages','income scope and reset','exact prior-year absence','filtered CSV export','SQL archive bytes','DataFlow preview, apply and undo','sample CSV export','numeric scatter pairs and omitted row notice','complete pie total','disabled real-file input'],'runtime_errors':errors,'outbound_mutations':mutations})
                 except Exception as error:
                     (evidence/f'{width}-failure.json').write_text(json.dumps({'error':str(error),'runtime_errors':errors,'outbound_mutations':mutations},indent=2))
                     page.screenshot(path=str(evidence/f'{width}-failure.png'),full_page=True);raise
