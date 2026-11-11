@@ -66,9 +66,9 @@ class DataFlowDemoTests(unittest.TestCase):
             demo.adapt_main(source.replace('initialResetToken=', 'changed='))
 
     def test_chart_scope_and_truncation_notices_are_required(self):
-        source = ' chart records loaded from the local preview. Remaining data is not plotted. Pie charts support sum or count only. Metric definition'
+        source = ' chart records loaded from the local preview. Remaining data is not plotted. Pie charts support sum or count only. Metric definition View chart values ChartValuesTable <caption'
         demo.verify_chart_scope(source)
-        for phrase in (' chart records loaded', ' from the local preview', 'Remaining data is not plotted.', 'Pie charts support sum or count only.', 'Metric definition'):
+        for phrase in (' chart records loaded', ' from the local preview', 'Remaining data is not plotted.', 'Pie charts support sum or count only.', 'Metric definition', 'View chart values', 'ChartValuesTable', '<caption'):
             with self.subTest(phrase=phrase), self.assertRaises(ValueError):
                 demo.verify_chart_scope(source.replace(phrase, ''))
 
