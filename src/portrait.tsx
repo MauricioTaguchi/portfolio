@@ -1,7 +1,9 @@
+import { useTranslation } from './language';
 import { useEffect, useRef, useState } from 'react';
 import { assetUrl } from './lib/assets';
 
 export default function HeroPortrait(){
+ const t=useTranslation();
  const canvas=useRef<HTMLCanvasElement>(null);const [ready,setReady]=useState(false);
  useEffect(()=>{const node=canvas.current;if(!node)return;const ctx=node.getContext('2d',{alpha:false});if(!ctx)return;
  let cancelled=false;let cleanup=()=>{};
@@ -19,5 +21,5 @@ export default function HeroPortrait(){
  let next=1;await Promise.all(Array.from({length:5},async()=>{while(next<manifest.frames.length&&!cancelled){await load(next++);}}));draw(target);
  }catch{/* The studio portrait remains available if the sequence cannot load. */}}
  init();return()=>{cancelled=true;cleanup();document.querySelector('.hero-track')?.classList.remove('has-sequence');};},[]);
- return <div className="portrait-stage"><img className={'portrait-fallback '+(ready?'is-hidden':'')} src={assetUrl('images/portrait.webp')} alt="Portrait of Maurício Taguchi" width={1086} height={1448} fetchPriority="high"/><canvas ref={canvas} className={ready?'portrait-canvas is-ready':'portrait-canvas'} role="img" aria-hidden={!ready} aria-label="Portrait of Maurício Taguchi that rotates as you scroll"/></div>;
+ return <div className="portrait-stage"><img className={'portrait-fallback '+(ready?'is-hidden':'')} src={assetUrl('images/portrait.webp')} alt={t('Portrait of Maurício Taguchi','Retrato de Maurício Taguchi')} width={1086} height={1448} fetchPriority="high"/><canvas ref={canvas} className={ready?'portrait-canvas is-ready':'portrait-canvas'} role="img" aria-hidden={!ready} aria-label={t('Portrait of Maurício Taguchi that rotates as you scroll','Retrato de Maurício Taguchi que gira conforme a rolagem')}/></div>;
 }
