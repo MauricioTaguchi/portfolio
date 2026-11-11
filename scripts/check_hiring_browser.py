@@ -117,7 +117,7 @@ def check(base,evidence):
                     frame.get_by_label('Aggregation',exact=True).select_option('mean')
                     frame.get_by_label('Chart type',exact=True).select_option('pie')
                     expect(frame.get_by_role('button',name='Build chart',exact=True)).to_be_disabled()
-                    expect(frame.get_by_label('Aggregation',exact=True).get_by_role('option',name='mean',exact=True)).to_be_disabled()
+                    expect(frame.get_by_label('Aggregation',exact=True).get_by_role('option',name='mean',exact=True)).to_have_attribute('disabled','')
                     frame.get_by_label('Aggregation',exact=True).select_option('sum')
                     frame.get_by_label('Dimension',exact=True).select_option('category')
                     frame.get_by_role('button',name='Build chart',exact=True).click()
