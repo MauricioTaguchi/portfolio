@@ -1,0 +1,47 @@
+/* One appearance control across the portfolio, articles and project pages. */
+.theme-control{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));z-index:45;display:flex;align-items:center;padding:3px;border:1px solid #cdd2de;border-radius:999px;background:#ffffffed;color:#202635;box-shadow:0 6px 28px #10182820;backdrop-filter:blur(14px);font:600 13px/1 Arial,Helvetica,sans-serif}
+.theme-control button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;min-width:44px;border:0;border-radius:999px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.theme-control-toggle{padding:0 15px}.theme-control-reset{padding:0 12px;border-left:1px solid #cdd2de!important;border-radius:0 999px 999px 0!important}.theme-control [hidden]{display:none}.theme-control-icon{font-size:22px;line-height:1;width:22px;text-align:center}.theme-control button:hover{background:#e9edfa}.theme-control button:focus-visible{outline:3px solid #3148f6;outline-offset:3px}
+html[data-theme=dark]{--background:#11151d;--foreground:#eef1f8;--card:#191f2a;--card-foreground:#eef1f8;--popover:#202735;--popover-foreground:#eef1f8;--primary:#9daaff;--primary-foreground:#11151d;--secondary:#252d3b;--secondary-foreground:#eef1f8;--muted:#b2bbce;--muted-foreground:#b2bbce;--accent:#293354;--accent-foreground:#eef1f8;--destructive:#ff8c99;--border:#374052;--input:#66738b;--ring:#a8b5ff;--blue:#a5b1ff;--paper:#1c2330;--ink:#eef1f8;--line:#374052;--white:#191f2a;color-scheme:dark;background:#11151d;color:#eef1f8}
+html[data-theme=dark]:has(#root){--muted:#252d3b}
+html[data-theme=dark] body{background:#11151d;color:#eef1f8}
+html[data-theme=dark] .site-header{background:#11151ded;border-bottom-color:#374052}
+html[data-theme=dark] .header-cta{border-color:#94a0b8}
+html[data-theme=dark] .menu-button,html[data-theme=dark] .mobile-menu-top button{color:#eef1f8}
+html[data-theme=dark] :is(.work,.expertise){background:#171d27}
+html[data-theme=dark] :is(.about,.marquee,.technical-writing){background:#11151d;color:#eef1f8;border-color:#374052}
+html[data-theme=dark] :is(.services,.income-comparison){background:#202735}
+html[data-theme=dark] :is(.muted,.hero-bio>span,.hero-bio .hero-description,.project-index,.project-category,.project-copy p,.stack,.income-intro>.small-label,.income-intro p,.about-copy p,.credentials .small-label,.credentials p,.section-heading>p,.skill-index,.skill-tools,.skill-content,.services-heading>p,.service-number,.service p,.service>div>span,.mobile-menu>p,.mobile-menu nav a span,.availability,.freelance-intro span,.income-comparison .small-label,.income-comparison dt,.income-comparison p,.technical-writing p){color:#b2bbce}
+html[data-theme=dark] .about-copy p.lead{color:#e4e9f5}
+html[data-theme=dark] .dataflow .project-visual{background:#2b3048}
+html[data-theme=dark] .image-caption{background:#151b29ed;color:#dfe5f5}
+html[data-theme=dark] .hiring-links a[download]{border-color:#6c7890}
+html[data-theme=dark] .button-primary,html[data-theme=dark] .button:not(.secondary),html[data-theme=dark] .technical-writing a,html[data-theme=dark] .language-switch button[aria-pressed=true],html[data-theme=dark] .prepared-message .open-email{background:#4056db;border-color:#6478f0;color:#fff}
+html[data-theme=dark] :is(.button-primary,.button:not(.secondary),.technical-writing a):hover{background:#4e65eb;color:#fff}
+html[data-theme=dark] .button.secondary{background:#202735;color:#b7c1ff;border-color:#7182dc}
+html[data-theme=dark] .contact{background:#1a265d;color:#fff}
+html[data-theme=dark] .contact h2 span{color:#b5c0ff}
+html[data-theme=dark] .prepared-message{background:#202b45;color:#eef1f8;border-color:#62749e}
+html[data-theme=dark] .prepared-message textarea{background:#141d30;color:#e8edfa!important;border-color:#66789e}
+html[data-theme=dark] .contact input::placeholder,html[data-theme=dark] .contact textarea::placeholder{color:#c4cdec}
+html[data-theme=dark] .contact input,html[data-theme=dark] .contact textarea,html[data-theme=dark] .contact-select{border-color:#a8b5da}
+html[data-theme=dark] .portrait-stage{mix-blend-mode:normal}
+html[data-theme=dark] :is(.portrait-fallback,.portrait-canvas){filter:brightness(.83);mask-image:linear-gradient(to bottom,#000 88%,transparent 100%)}
+html[data-theme=dark] .theme-control{background:#202735ed;color:#eef1f8;border-color:#56627a;box-shadow:0 6px 28px #0005}
+html[data-theme=dark] .theme-control-reset{border-left-color:#56627a!important}
+html[data-theme=dark] .theme-control button:hover{background:#34415a}
+html[data-theme=dark] :focus-visible{outline-color:#b3bfff}
+html[data-theme=dark] :is(.downloads,.top,.skip){background:#191f2a}
+html[data-theme=dark] .callout{background:#253154;color:#e6ebff}
+html[data-theme=dark] .prose code,html[data-theme=dark] th{background:#293141;color:#e9edf7}
+html[data-theme=dark] .prose pre{background:#0d111a;color:#e4eaff}
+html[data-theme=dark] .prose pre code{background:transparent;color:inherit}
+html[data-theme=dark] .controls select{background:#202735;color:#eef1f8;border-color:#66738b}
+html[data-theme=dark] .demo-note{border-color:#374052}
+html[data-theme=dark] #trend text{fill:#b2bbce}
+html[data-theme=dark] #trend line{stroke:#374052}
+html[data-theme=dark] #trend polyline{stroke:#a5b1ff}
+html[data-theme=dark] #trend circle{fill:#a5b1ff}
+@media(max-width:600px){.theme-control{right:12px;bottom:max(12px,env(safe-area-inset-bottom))}.theme-control-toggle{padding-inline:12px}}
+@media(prefers-reduced-motion:no-preference){.theme-control button{transition:background .15s ease}}
+@media print{.theme-control{display:none!important}html[data-theme=dark],html[data-theme=dark] body{background:white!important;color:#111!important;--paper:#f3f3f3;--ink:#111;--blue:#233de5;--muted:#444;--line:#ccc}}
