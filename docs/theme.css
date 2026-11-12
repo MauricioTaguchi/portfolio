@@ -30,6 +30,7 @@ html[data-theme=dark] :is(.portrait-fallback,.portrait-canvas){filter:brightness
 html[data-theme=dark] .theme-control{background:#202735ed;color:#eef1f8;border-color:#56627a;box-shadow:0 6px 28px #0005}
 html[data-theme=dark] .theme-control-reset{border-left-color:#56627a!important}
 html[data-theme=dark] .theme-control button:hover{background:#34415a}
+html[data-theme=dark] .skip-link,html[data-theme=dark] ::selection{background:#a5b1ff;color:#11151d}
 html[data-theme=dark] :focus-visible{outline-color:#b3bfff}
 html[data-theme=dark] :is(.downloads,.top,.skip){background:#191f2a}
 html[data-theme=dark] .callout{background:#253154;color:#e6ebff}
