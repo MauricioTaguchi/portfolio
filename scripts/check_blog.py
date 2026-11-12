@@ -100,6 +100,15 @@ def check(source: Path, published: Path) -> dict:
             parsed = urlsplit(href)
             if parsed.scheme or parsed.netloc or href == '../':
                 continue
+            if parsed.path in {'/theme.js', '/theme.css'}:
+                shared = Path(parsed.path.lstrip('/'))
+                resource = source.parent / shared
+                mirror = published.parent / shared
+                require(not parsed.fragment, f'Unexpected shared resource fragment: {href}')
+                require(resource.is_file() and mirror.is_file(), f'Missing shared resource: {href}')
+                require(resource.read_bytes() == mirror.read_bytes(), f'Shared resource mirror mismatch: {href}')
+                links += 1
+                continue
             target = (source/path).parent / unquote(parsed.path) if parsed.path else source/path
             target = target.resolve()
             require(target.is_relative_to(source), f'Unexpected local target: {path} -> {href}')
